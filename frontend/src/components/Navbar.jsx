@@ -48,7 +48,7 @@ export default function Navbar({
 
   return (
     <header className="relative z-50 w-full bg-white shadow-xs transition-all">
-      <div className="max-w-container-max mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
+      <div className="max-w-[1400px] mx-auto px-3 md:px-4 h-20 flex items-center justify-between gap-4">
 
         {/* Brand Logo (Trivago-like colorful styling) */}
         <div className="flex items-center gap-6">

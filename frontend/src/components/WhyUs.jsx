@@ -26,7 +26,7 @@ export default function WhyUs() {
 
   return (
     <section id="why-us" className="w-full bg-[#F8FAFC] py-12 md:py-16 relative select-none border-y border-gray-100">
-      <div className="max-w-container-max mx-auto px-4 md:px-12 relative z-10">
+      <div className="max-w-container-max mx-auto px-3 md:px-4 relative z-10">
         
         {/* Flat Minimalist Header */}
         <div className="text-center mb-10">

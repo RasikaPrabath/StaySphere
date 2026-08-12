@@ -105,7 +105,7 @@ export default function SearchResults({
   const locationTitle = searchQuery ? searchQuery.split(",")[0] : "Colombo";
 
   return (
-    <main className="flex-1 w-full max-w-container-max mx-auto px-4 md:px-12 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
+    <main className="flex-1 w-full max-w-container-max mx-auto px-3 md:px-4 py-8 grid grid-cols-1 md:grid-cols-12 gap-8">
       {/* Left Sidebar: Filters */}
       <aside className="md:col-span-3 hidden md:block">
         <div className="bg-surface-white rounded-2xl border border-outline-variant p-6 sticky top-28 shadow-sm">

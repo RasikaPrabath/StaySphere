@@ -107,13 +107,93 @@ using (var scope = app.Services.CreateScope())
         {
             // Specifically check if application tables are initialized
             _ = context.Users.Any();
-            Log.Information("Database check passed. Application tables already exist.");
-        }
-        catch (System.Exception)
-        {
-            Log.Information("Application tables do not exist. Initializing schema...");
-            databaseCreator.CreateTables();
-            Log.Information("Application tables created successfully.");
+            Log.Information("Application tables created/verified successfully.");
+
+            // Seed role demo accounts if missing
+            var hasher = scope.ServiceProvider.GetRequiredService<StaySphere.Application.Common.Interfaces.IPasswordHasher>();
+            var seedUsers = new[]
+            {
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "customer@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "Kasun",
+                    LastName = "Perera",
+                    PhoneNumber = "0771234567",
+                    Role = StaySphere.Domain.Enums.UserRole.Customer,
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "staff@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "Nimal",
+                    LastName = "Fernando",
+                    PhoneNumber = "0772345678",
+                    Role = StaySphere.Domain.Enums.UserRole.HotelStaff,
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "owner@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "Kamal",
+                    LastName = "Silva",
+                    PhoneNumber = "0773456789",
+                    Role = StaySphere.Domain.Enums.UserRole.HotelOwner,
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "admin@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "System",
+                    LastName = "Admin",
+                    PhoneNumber = "0774567890",
+                    Role = StaySphere.Domain.Enums.UserRole.Admin,
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "superadmin@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "Root",
+                    LastName = "SuperAdmin",
+                    PhoneNumber = "0775678901",
+                    Role = StaySphere.Domain.Enums.UserRole.SuperAdmin,
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                }
+            };
+
+            bool seededAny = false;
+            foreach (var u in seedUsers)
+            {
+                if (!context.Users.Any(x => x.Email == u.Email))
+                {
+                    context.Users.Add(u);
+                    seededAny = true;
+                }
+            }
+            if (seededAny)
+            {
+                context.SaveChanges();
+                Log.Information("Role-based user accounts seeded successfully.");
+            }
         }
     }
     catch (System.Exception ex)

@@ -71,9 +71,9 @@ export default {
       spacing: {
         "base": "4px",
         "margin-mobile": "16px",
-        "margin-desktop": "48px",
+        "margin-desktop": "16px",
         "gutter": "24px",
-        "container-max": "1280px"
+        "container-max": "1400px"
       },
       fontFamily: {
         sans: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],

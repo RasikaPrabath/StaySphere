@@ -3,7 +3,7 @@ import React from 'react';
 export default function Footer() {
   return (
     <footer className="bg-surface-container-lowest text-on-surface w-full border-t border-outline-variant mt-auto">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 px-4 md:px-12 py-12 max-w-container-max mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 px-3 md:px-4 py-12 max-w-container-max mx-auto">
 
         {/* Col 1: Brand */}
         <div className="flex flex-col gap-3">
@@ -55,7 +55,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="border-t border-outline-variant/50 py-6 px-4 md:px-12 text-center bg-surface-container-low/40">
+      <div className="border-t border-outline-variant/50 py-6 px-3 md:px-4 text-center bg-surface-container-low/40">
         <p className="text-xs text-on-surface-variant">
           © {new Date().getFullYear()} StaySphere Inc. All rights reserved. Designed with luxury and precision.
         </p>

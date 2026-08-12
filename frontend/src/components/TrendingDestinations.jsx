@@ -20,7 +20,7 @@ export default function TrendingDestinations({ onSelectDestination, selectedDest
     : TRENDING_DESTINATIONS.filter(d => d.id.includes(activeTab) || d.name.toLowerCase().includes(activeTab));
 
   return (
-    <section id="destinations" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-6">
+    <section id="destinations" className="w-full max-w-[1400px] mx-auto px-3 md:px-4 py-6">
       {/* Section Header matching Trivago style */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg md:text-xl font-bold text-[#111827] tracking-tight font-sans">

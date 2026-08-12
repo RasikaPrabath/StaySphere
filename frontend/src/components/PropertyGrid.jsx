@@ -41,7 +41,7 @@ export default function PropertyGrid({
   });
 
   return (
-    <section id="properties" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-6">
+    <section id="properties" className="w-full max-w-[1400px] mx-auto px-3 md:px-4 py-6">
       {/* Header & Filter Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-outline-variant/40">
         <div>

@@ -24,10 +24,10 @@ export default function Hero({
   const totalGuests = guests.adults + guests.children;
 
   return (
-    <section className="relative w-full bg-[#F3F3F2] py-6 md:py-8 flex items-center justify-center px-4 overflow-visible select-none">
+    <section className="relative w-full bg-gradient-to-b from-white via-[#F8F8F7] to-[#F3F3F2] py-6 md:py-8 flex items-center justify-center px-3 md:px-4 overflow-visible select-none">
 
       {/* Hero Content */}
-      <div className="relative z-10 w-full max-w-[1080px] mx-auto text-center flex flex-col items-center">
+      <div className="relative z-10 w-full max-w-[1400px] mx-auto text-center flex flex-col items-center">
 
         {/* Main StaySphere Titles */}
         <h1
