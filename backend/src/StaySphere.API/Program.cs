@@ -3,6 +3,7 @@ using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Serilog;
 using StaySphere.Application.Common.Interfaces;
 using StaySphere.API.Hubs;
@@ -94,8 +95,26 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<StaySphere.Infrastructure.Persistence.StaySphereDbContext>();
     try
     {
-        context.Database.EnsureCreated();
-        Log.Information("Database initialization check passed successfully.");
+        var databaseCreator = (Microsoft.EntityFrameworkCore.Storage.IRelationalDatabaseCreator)
+            context.Database.GetService<Microsoft.EntityFrameworkCore.Storage.IDatabaseCreator>();
+        
+        if (!databaseCreator.Exists())
+        {
+            databaseCreator.Create();
+        }
+        
+        try
+        {
+            // Specifically check if application tables are initialized
+            _ = context.Users.Any();
+            Log.Information("Database check passed. Application tables already exist.");
+        }
+        catch (System.Exception)
+        {
+            Log.Information("Application tables do not exist. Initializing schema...");
+            databaseCreator.CreateTables();
+            Log.Information("Application tables created successfully.");
+        }
     }
     catch (System.Exception ex)
     {
