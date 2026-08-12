@@ -7,6 +7,7 @@ COPY src/StaySphere.Domain/StaySphere.Domain.csproj src/StaySphere.Domain/
 COPY src/StaySphere.Application/StaySphere.Application.csproj src/StaySphere.Application/
 COPY src/StaySphere.Infrastructure/StaySphere.Infrastructure.csproj src/StaySphere.Infrastructure/
 COPY src/StaySphere.API/StaySphere.API.csproj src/StaySphere.API/
+COPY src/StaySphere.UnitTests/StaySphere.UnitTests.csproj src/StaySphere.UnitTests/
 COPY StaySphere.sln ./
 RUN dotnet restore StaySphere.sln
 

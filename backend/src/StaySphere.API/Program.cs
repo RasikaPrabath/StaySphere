@@ -27,7 +27,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSignalR();
 
 // Hangfire background jobs (PostgreSQL storage)
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+var connectionString = builder.Configuration["DATABASE_URL"]
+    ?? builder.Configuration.GetConnectionString("DefaultConnection")
     ?? "Host=localhost;Port=5432;Database=staysphere_db;Username=postgres;Password=postgres_secure_pass_2026";
 
 builder.Services.AddHangfire(config =>
@@ -86,6 +87,21 @@ app.MapGet("/api/v1/health", () => Results.Ok(new
     Timestamp = System.DateTime.UtcNow,
     Version = "1.0.0-phase9"
 }));
+
+// Apply database schema initialization on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<StaySphere.Infrastructure.Persistence.StaySphereDbContext>();
+    try
+    {
+        context.Database.EnsureCreated();
+        Log.Information("Database initialization check passed successfully.");
+    }
+    catch (System.Exception ex)
+    {
+        Log.Error(ex, "Failed to initialize Database on startup.");
+    }
+}
 
 Log.Information("StaySphere Enterprise Web API starting up...");
 app.Run();
