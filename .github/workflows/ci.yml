@@ -1,0 +1,51 @@
+name: StaySphere CI Check
+
+on:
+  push:
+    branches: [ develop, main ]
+  pull_request:
+    branches: [ develop, main ]
+
+jobs:
+  backend-build-test:
+    name: Backend Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore Backend Dependencies
+      run: dotnet restore backend/StaySphere.sln
+
+    - name: Build Backend Solution
+      run: dotnet build backend/StaySphere.sln --no-restore --configuration Release
+
+    - name: Run Backend Unit Tests
+      run: dotnet test backend/StaySphere.sln --no-build --configuration Release
+
+  frontend-build:
+    name: Frontend Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Frontend Dependencies
+      working-directory: ./frontend
+      run: npm install
+
+    - name: Build Frontend React App
+      working-directory: ./frontend
+      run: npm run build
