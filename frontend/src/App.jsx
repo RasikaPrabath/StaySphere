@@ -141,7 +141,7 @@ export default function App() {
   const defaultProperty = PROPERTIES.find(p => p.id === "prop-grand-horizon") || PROPERTIES[0];
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-sans flex flex-col selection:bg-secondary-fixed selection:text-primary">
+    <div className="min-h-screen bg-white text-on-surface font-sans flex flex-col selection:bg-secondary-fixed selection:text-primary">
       {/* Top Navbar */}
       <Navbar
         currentView={currentView}

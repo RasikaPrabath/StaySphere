@@ -4,52 +4,51 @@ export default function WhyUs() {
   const benefits = [
     {
       icon: "verified",
-      title: "Best Price Guarantee",
-      description: "Find a lower price for the same stay and we'll match it, ensuring you receive the ultimate value for luxury."
+      title: "Direct Price Guarantee",
+      description: "Book directly with property owners for the best guaranteed rates with no middleman markups."
     },
     {
       icon: "support_agent",
-      title: "24/7 Premium Support",
-      description: "Dedicated personal concierges available around the clock to assist with airport transfers, yacht charters, and private chefs."
+      title: "24/7 Concierge Support",
+      description: "Dedicated personal assistance for airport transfers, itinerary planning, and villa arrangements."
     },
     {
-      icon: "auto_awesome",
-      title: "AI-Powered Picks",
-      description: "Smart tailored recommendations calibrated to your unique travel aesthetics, preferences, and itinerary."
+      icon: "verified_user",
+      title: "Handpicked Luxury Stays",
+      description: "Every hotel, villa, and eco-resort is strictly vetted for world-class quality and hospitality."
     },
     {
       icon: "shield",
-      title: "Secure Global Payments",
-      description: "Bank-level encryption with multi-currency checkout, flexible cancellation options, and instant confirmation."
+      title: "Instant Secure Booking",
+      description: "Bank-level encryption with multi-currency checkout, flexible cancellation options, and immediate voucher."
     }
   ];
 
   return (
-    <section id="why-us" className="w-full bg-primary text-surface-white py-20 relative overflow-hidden">
-      {/* Glow Backdrops */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-secondary/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-tertiary-fixed/10 rounded-full blur-3xl pointer-events-none" />
-
+    <section id="why-us" className="w-full bg-[#F8FAFC] py-12 md:py-16 relative select-none border-y border-gray-100">
       <div className="max-w-container-max mx-auto px-4 md:px-12 relative z-10">
-        <div className="text-center mb-14">
-          <span className="text-xs font-extrabold text-tertiary-fixed uppercase tracking-widest block mb-2">The StaySphere Standard</span>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">Why Choose StaySphere</h2>
-          <p className="text-sm md:text-base text-surface-white/80 max-w-2xl mx-auto font-medium">
-            Experience the pinnacle of luxury travel with our exclusive benefits, curated villas, and world-class concierge service.
+        
+        {/* Flat Minimalist Header */}
+        <div className="text-center mb-10">
+          <span className="text-xs font-extrabold text-[#0058bc] uppercase tracking-widest block mb-2">The StaySphere Difference</span>
+          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Why Book With StaySphere</h2>
+          <p className="text-xs md:text-sm text-gray-600 max-w-2xl mx-auto font-medium leading-relaxed">
+            Experience seamless luxury travel across Sri Lanka with direct owner rates, verified properties, and round-the-clock concierge service.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* 4-Column Flat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((item, idx) => (
             <div 
               key={idx}
-              className="flex flex-col items-center text-center p-8 rounded-3xl bg-surface-white/10 hover:bg-surface-white/15 transition-all duration-300 border border-surface-white/10 group transform hover:-translate-y-1 shadow-lg"
+              className="flex flex-col items-center text-center p-6 rounded-2xl bg-white hover:shadow-lg transition-all duration-200 border border-gray-200/80 group"
             >
-              <div className="w-16 h-16 rounded-2xl bg-surface-white/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <span className="material-symbols-outlined text-3xl text-tertiary-fixed" data-icon={item.icon}>{item.icon}</span>
+              <div className="w-12 h-12 rounded-xl bg-[#0058bc]/10 border border-[#0058bc]/20 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                <span className="material-symbols-outlined text-2xl text-[#0058bc]">{item.icon}</span>
               </div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-tertiary-fixed transition-colors">{item.title}</h3>
-              <p className="text-surface-white/75 text-xs leading-relaxed font-normal">{item.description}</p>
+              <h3 className="text-base font-bold mb-2 text-gray-900">{item.title}</h3>
+              <p className="text-gray-600 text-xs leading-relaxed font-normal">{item.description}</p>
             </div>
           ))}
         </div>

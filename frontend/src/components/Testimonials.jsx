@@ -23,8 +23,8 @@ export default function Testimonials({ onAddToast }) {
   };
 
   return (
-    <section className="w-full max-w-container-max mx-auto px-4 md:px-12 py-20">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+    <section className="w-full max-w-container-max mx-auto px-4 md:px-12 py-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
         <div>
           <span className="text-xs font-bold text-secondary uppercase tracking-widest block mb-1">Guest Experiences</span>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">Stories from Our Guests</h2>

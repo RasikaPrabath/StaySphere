@@ -3,12 +3,12 @@ import { FEATURED_COLLECTIONS } from '../data/mockData';
 
 export default function FeaturedCollections({ activeCategory, onSelectCategory }) {
   return (
-    <section id="collections" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-10 bg-surface-container-low/60 rounded-3xl my-4">
-      <div className="flex justify-between items-end mb-10">
+    <section id="collections" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-6 bg-white rounded-3xl my-2">
+      <div className="flex justify-between items-end mb-6">
         <div>
-          <span className="text-xs font-bold text-secondary uppercase tracking-widest block mb-1">Curated Travel</span>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">Featured Collections</h2>
-          <p className="text-sm md:text-base text-on-surface-variant font-medium mt-1">Handbook of curated stays for every type of traveler.</p>
+          <span className="bg-amber-50 text-amber-700 border border-amber-200/80 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider inline-block mb-1.5">Curated Travel</span>
+          <h2 className="text-lg md:text-xl font-bold text-[#111827] tracking-tight font-sans">Featured Collections</h2>
+          <p className="text-xs md:text-sm text-slate-500 font-medium mt-0.5">Handbook of curated stays for every type of traveler.</p>
         </div>
         
         <button 

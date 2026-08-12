@@ -47,7 +47,7 @@ export default function Navbar({
   const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white shadow-xs transition-all">
+    <header className="relative z-50 w-full bg-white shadow-xs transition-all">
       <div className="max-w-container-max mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
 
         {/* Brand Logo (Trivago-like colorful styling) */}

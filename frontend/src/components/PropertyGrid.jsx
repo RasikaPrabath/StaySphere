@@ -41,14 +41,14 @@ export default function PropertyGrid({
   });
 
   return (
-    <section id="properties" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-12">
+    <section id="properties" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-6">
       {/* Header & Filter Bar */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-outline-variant/40">
         <div>
-          <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">
+          <h2 className="text-lg md:text-xl font-bold text-[#111827] tracking-tight font-sans">
             Exclusive Stays & Villas
           </h2>
-          <p className="text-xs md:text-sm text-on-surface-variant font-medium mt-1">
+          <p className="text-xs md:text-sm text-gray-500 font-medium mt-0.5">
             Showing {filteredProperties.length} hand-picked luxury spaces available for booking.
           </p>
         </div>

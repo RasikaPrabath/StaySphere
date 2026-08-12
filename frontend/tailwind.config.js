@@ -76,8 +76,13 @@ export default {
         "container-max": "1280px"
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        inter: ["Inter", "sans-serif"]
+        sans: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        opensans: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        trivago: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        inter: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        jakarta: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        outfit: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        rubik: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"]
       }
     },
   },
