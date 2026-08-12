@@ -1,17 +1,41 @@
 import React, { useState } from 'react';
+import { authApi } from '../data/api';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLoginSuccess && onLoginSuccess(isSignUp ? name || "Guest User" : email.split("@")[0] || "Luxury Traveler");
-    onClose();
+    setLoading(true);
+    setError("");
+
+    try {
+      if (isSignUp) {
+        // Split name into First and Last
+        const nameParts = name.trim().split(" ");
+        const firstName = nameParts[0] || "Guest";
+        const lastName = nameParts.slice(1).join(" ") || "User";
+        const dummyPhone = "0771234567";
+
+        const user = await authApi.register(email, password, firstName, lastName, dummyPhone);
+        onLoginSuccess && onLoginSuccess(user);
+      } else {
+        const user = await authApi.login(email, password);
+        onLoginSuccess && onLoginSuccess(user);
+      }
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.message || "Authentication failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -27,6 +51,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             <span className="material-symbols-outlined text-lg">close</span>
           </button>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-error-container text-error text-xs rounded-xl font-medium border border-error/20">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignUp && (
@@ -69,9 +99,10 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
           <button
             type="submit"
-            className="w-full bg-secondary hover:bg-secondary-container text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-md mt-2"
+            disabled={loading}
+            className="w-full bg-secondary hover:bg-secondary-container disabled:opacity-50 text-white font-bold text-xs py-3.5 rounded-xl transition-all shadow-md mt-2"
           >
-            {isSignUp ? "Register Account" : "Log In"}
+            {loading ? "Processing..." : isSignUp ? "Register Account" : "Log In"}
           </button>
         </form>
 

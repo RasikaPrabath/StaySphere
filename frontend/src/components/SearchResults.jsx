@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PROPERTIES } from '../data/mockData';
+import { searchApi } from '../data/api';
 
 export default function SearchResults({ 
   searchQuery, 
@@ -13,12 +14,59 @@ export default function SearchResults({
   const [amenityFilter, setAmenityFilter] = useState({ wifi: false, pool: false, gym: false, spa: false });
   const [sortBy, setSortBy] = useState("top-picks");
   const [currentPage, setCurrentPage] = useState(1);
+  const [backendProperties, setBackendProperties] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchSource, setSearchSource] = useState("");
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      setLoading(true);
+      try {
+        const queryParts = searchQuery ? searchQuery.split(",") : [];
+        const city = queryParts[0]?.trim();
+        const country = queryParts[1]?.trim();
+
+        const response = await searchApi.searchHotels({
+          city: city || undefined,
+          country: country || undefined,
+          sortBy: sortBy === "lowest-price" ? "pricelowtohigh" : "rating"
+        });
+
+        // Map API response to UI format
+        const mapped = response.items.map(item => ({
+          id: item.id,
+          title: item.name,
+          location: `${item.city}, ${item.country}`,
+          price: item.minRoomPrice || 120, // default if no rooms
+          rating: item.starRating,
+          reviewsCount: 45,
+          image: item.imageUrls[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945",
+          images: item.imageUrls,
+          amenities: item.amenities,
+          description: item.description,
+          category: "beachfront"
+        }));
+
+        setBackendProperties(mapped);
+        setSearchSource(response.source);
+      } catch (err) {
+        console.warn("Backend API search offline, falling back to mockData", err);
+        setBackendProperties([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+  }, [searchQuery, sortBy]);
+
+  const displayProperties = backendProperties.length > 0 ? backendProperties : PROPERTIES;
 
   const currencySymbol = selectedCurrency?.symbol || "$";
   const currencyRate = selectedCurrency?.code === "EUR" ? 0.92 : selectedCurrency?.code === "GBP" ? 0.78 : selectedCurrency?.code === "JPY" ? 150 : selectedCurrency?.code === "AED" ? 3.67 : 1;
 
   // Filter properties
-  let filtered = PROPERTIES.filter((prop) => {
+  let filtered = displayProperties.filter((prop) => {
     // Search query match
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -147,11 +195,23 @@ export default function SearchResults({
       {/* Main Area: Search Results */}
       <section className="col-span-1 md:col-span-9 flex flex-col gap-6">
         {/* Summary and Sorting Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-surface-white p-4 rounded-2xl border border-outline-variant/50 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-xl md:text-2xl font-extrabold text-primary">
-              {locationTitle}: {filtered.length > 0 ? `${filtered.length * 85}+ properties found` : "0 properties found"}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl md:text-2xl font-extrabold text-primary">
+                {locationTitle}: {filtered.length > 0 ? `${filtered.length} properties found` : "0 properties found"}
+              </h1>
+              {searchSource && (
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                  searchSource === "Cache" 
+                    ? "bg-secondary-fixed/20 text-secondary border-secondary/20" 
+                    : "bg-primary-fixed/20 text-primary border-primary/20"
+                }`}>
+                  <span className="material-symbols-outlined text-[12px]">{searchSource === "Cache" ? "bolt" : "database"}</span>
+                  {searchSource === "Cache" ? "Redis Cache" : "PostgreSQL"}
+                </span>
+              )}
+            </div>
             <p className="text-xs font-medium text-on-surface-variant mt-0.5">
               Oct 12 - Oct 15 • 2 Adults, 1 Room
             </p>
@@ -172,7 +232,12 @@ export default function SearchResults({
         </div>
 
         {/* Results List Cards */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-10 h-10 border-4 border-secondary border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-xs text-on-surface-variant mt-4 font-medium">Searching best available stays...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="bg-surface-white rounded-3xl p-12 text-center border border-outline-variant shadow-sm">
             <span className="material-symbols-outlined text-5xl text-outline mb-2">search_off</span>
             <h3 className="text-base font-bold text-primary mb-1">No Properties Found in {locationTitle}</h3>
