@@ -33,6 +33,9 @@ namespace StaySphere.Infrastructure.Persistence
             {
                 entity.HasKey(h => h.Id);
                 entity.Property(h => h.Name).IsRequired().HasMaxLength(200);
+                entity.HasIndex(h => h.City);
+                entity.HasIndex(h => h.Country);
+                entity.HasIndex(h => h.ApprovalStatus);
                 entity.HasOne(h => h.Owner)
                       .WithMany(u => u.OwnedHotels)
                       .HasForeignKey(h => h.OwnerId)
@@ -43,6 +46,8 @@ namespace StaySphere.Infrastructure.Persistence
             modelBuilder.Entity<Room>(entity =>
             {
                 entity.HasKey(r => r.Id);
+                entity.HasIndex(r => r.Status);
+                entity.HasIndex(r => r.PricePerNight);
                 entity.HasOne(r => r.Hotel)
                       .WithMany(h => h.Rooms)
                       .HasForeignKey(r => r.HotelId)
