@@ -108,8 +108,17 @@ using (var scope = app.Services.CreateScope())
             // Specifically check if application tables are initialized
             _ = context.Users.Any();
             Log.Information("Application tables created/verified successfully.");
+        }
+        catch (System.Exception)
+        {
+            Log.Information("Application tables do not exist. Initializing schema...");
+            databaseCreator.CreateTables();
+            Log.Information("Application tables created successfully.");
+        }
 
-            // Seed role demo accounts if missing
+        // Seed role demo accounts if missing
+        try
+        {
             var hasher = scope.ServiceProvider.GetRequiredService<StaySphere.Application.Common.Interfaces.IPasswordHasher>();
             var seedUsers = new[]
             {
@@ -123,8 +132,8 @@ using (var scope = app.Services.CreateScope())
                     PhoneNumber = "0771234567",
                     Role = StaySphere.Domain.Enums.UserRole.Customer,
                     IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
                 },
                 new StaySphere.Domain.Entities.User
                 {
@@ -136,8 +145,8 @@ using (var scope = app.Services.CreateScope())
                     PhoneNumber = "0772345678",
                     Role = StaySphere.Domain.Enums.UserRole.HotelStaff,
                     IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
                 },
                 new StaySphere.Domain.Entities.User
                 {
@@ -149,8 +158,8 @@ using (var scope = app.Services.CreateScope())
                     PhoneNumber = "0773456789",
                     Role = StaySphere.Domain.Enums.UserRole.HotelOwner,
                     IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
                 },
                 new StaySphere.Domain.Entities.User
                 {
@@ -162,8 +171,8 @@ using (var scope = app.Services.CreateScope())
                     PhoneNumber = "0774567890",
                     Role = StaySphere.Domain.Enums.UserRole.Admin,
                     IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
                 },
                 new StaySphere.Domain.Entities.User
                 {
@@ -175,8 +184,8 @@ using (var scope = app.Services.CreateScope())
                     PhoneNumber = "0775678901",
                     Role = StaySphere.Domain.Enums.UserRole.SuperAdmin,
                     IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
                 }
             };
 
@@ -194,6 +203,10 @@ using (var scope = app.Services.CreateScope())
                 context.SaveChanges();
                 Log.Information("Role-based user accounts seeded successfully.");
             }
+        }
+        catch (System.Exception ex)
+        {
+            Log.Warning(ex, "Failed seeding demo users.");
         }
     }
     catch (System.Exception ex)
