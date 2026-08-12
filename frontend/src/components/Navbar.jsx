@@ -218,18 +218,26 @@ export default function Navbar({
             {/* Menu Dropdown Menu */}
             {showMenuDropdown && (
               <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn text-left">
-                {/* User Info Section */}
+                {/* User Info & Role Badge Section */}
                 {user && (
-                  <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2.5 mb-1 bg-gray-50/50">
-                    <div className="w-8 h-8 rounded-lg bg-[#0058bc]/10 text-[#0058bc] flex items-center justify-center font-bold text-xs shrink-0">
-                      {((user.firstName || user.FirstName || 'U')[0]).toUpperCase()}
+                  <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between gap-2.5 mb-1 bg-gray-50/50">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#0058bc]/10 text-[#0058bc] flex items-center justify-center font-bold text-xs shrink-0">
+                        {((user.firstName || user.FirstName || 'U')[0]).toUpperCase()}
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-bold text-xs text-gray-800 truncate">
+                          {user.firstName || user.FirstName || ''} {user.lastName || user.LastName || ''}
+                        </span>
+                        <span className="text-[10px] text-gray-400 truncate font-semibold">{user.email || user.Email}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="font-bold text-xs text-gray-800 truncate">
-                        {user.firstName || user.FirstName || ''} {user.lastName || user.LastName || ''}
-                      </span>
-                      <span className="text-[10px] text-gray-400 truncate font-semibold">{user.email || user.Email}</span>
-                    </div>
+                    <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full shrink-0 uppercase tracking-wider ${
+                      isAdmin ? "bg-blue-100 text-blue-800" :
+                      isOwner ? "bg-purple-100 text-purple-800" : "bg-emerald-100 text-emerald-800"
+                    }`}>
+                      {isAdmin ? "SuperAdmin" : isOwner ? "Owner" : "Customer"}
+                    </span>
                   </div>
                 )}
 
@@ -291,47 +299,43 @@ export default function Navbar({
                   )}
                 </button>
 
-                <button
-                  onClick={() => {
-                    setCurrentView("home");
-                    setShowMenuDropdown(false);
-                    setTimeout(() => document.getElementById('why-us')?.scrollIntoView({ behavior: 'smooth' }), 150);
-                  }}
-                  className="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-lg text-indigo-500">verified</span>
-                  <span>Why StaySphere</span>
-                </button>
-
                 <div className="w-full h-px bg-gray-100 my-1.5" />
 
-                {/* Property Owner Action */}
-                <button
-                  onClick={() => {
-                    setShowMenuDropdown(false);
-                    if (isOwner) {
+                {/* Role-Restricted Portals */}
+                {isOwner ? (
+                  <button
+                    onClick={() => {
                       setCurrentView("owner-dashboard");
-                    } else if (!user) {
+                      setShowMenuDropdown(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'owner-dashboard' ? 'text-purple-800 font-bold bg-purple-50' : 'text-purple-700'}`}
+                  >
+                    <span className="material-symbols-outlined text-lg text-purple-600">domain_add</span>
+                    <span>Hotel Owner Dashboard</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setShowMenuDropdown(false);
                       onOpenAuth();
-                    } else {
-                      setCurrentView("owner-dashboard");
-                    }
-                  }}
-                  className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'owner-dashboard' ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-800 font-bold'
-                    }`}
-                >
-                  <span className="material-symbols-outlined text-lg text-purple-600">domain_add</span>
-                  <span>List Your Hotel / Property</span>
-                </button>
+                    }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-purple-700 hover:bg-purple-50 transition-colors flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg text-purple-600">add_business</span>
+                    <span>List Hotel (Partner Login)</span>
+                  </button>
+                )}
 
                 {isAdmin && (
                   <button
-                    onClick={() => { setCurrentView("admin-panel"); setShowMenuDropdown(false); }}
-                    className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'admin-panel' ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-700'
-                      }`}
+                    onClick={() => { 
+                      setCurrentView("admin-panel"); 
+                      setShowMenuDropdown(false); 
+                    }}
+                    className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'admin-panel' ? 'text-blue-800 font-bold bg-blue-50' : 'text-blue-700'}`}
                   >
-                    <span className="material-symbols-outlined text-lg text-blue-600">verified_user</span>
-                    <span>Admin Control Center</span>
+                    <span className="material-symbols-outlined text-lg text-blue-600">admin_panel_settings</span>
+                    <span>Super Admin Control Center</span>
                   </button>
                 )}
 

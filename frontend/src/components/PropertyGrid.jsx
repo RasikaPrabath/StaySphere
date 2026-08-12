@@ -11,6 +11,8 @@ export default function PropertyGrid({
   onToggleWishlist
 }) {
   const [priceFilter, setPriceFilter] = useState("all");
+  const [amenityFilter, setAmenityFilter] = useState("all");
+  const [minRatingFilter, setMinRatingFilter] = useState(0);
 
   const currencySymbol = selectedCurrency?.symbol || "$";
   const currencyRate = selectedCurrency?.code === "EUR" ? 0.92 : selectedCurrency?.code === "GBP" ? 0.78 : selectedCurrency?.code === "JPY" ? 150 : selectedCurrency?.code === "AED" ? 3.67 : 1;
@@ -37,39 +39,111 @@ export default function PropertyGrid({
     if (priceFilter === "1000-2000" && (prop.price < 1000 || prop.price > 2000)) return false;
     if (priceFilter === "over-2000" && prop.price <= 2000) return false;
 
+    // Amenity filter
+    if (amenityFilter === "pool" && !prop.amenities.some(a => a.toLowerCase().includes("pool"))) return false;
+    if (amenityFilter === "spa" && !prop.amenities.some(a => a.toLowerCase().includes("spa"))) return false;
+    if (amenityFilter === "wifi" && !prop.amenities.some(a => a.toLowerCase().includes("wifi"))) return false;
+    if (amenityFilter === "cancellation" && !prop.freeCancellation) return false;
+
+    // Rating filter
+    if (minRatingFilter > 0 && prop.rating < minRatingFilter) return false;
+
     return true;
   });
+
+  const resetAllGridFilters = () => {
+    setPriceFilter("all");
+    setAmenityFilter("all");
+    setMinRatingFilter(0);
+  };
+
+  const hasActiveGridFilters = priceFilter !== "all" || amenityFilter !== "all" || minRatingFilter > 0;
 
   return (
     <section id="properties" className="w-full max-w-[1400px] mx-auto px-3 md:px-4 py-6">
       {/* Header & Filter Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-outline-variant/40">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8 pb-6 border-b border-outline-variant/40">
         <div>
-          <h2 className="text-lg md:text-xl font-bold text-[#111827] tracking-tight font-sans">
-            Exclusive Stays & Villas
+          <h2 className="text-lg md:text-xl font-bold text-[#111827] tracking-tight font-sans flex items-center gap-2">
+            <span>Exclusive Stays & Villas</span>
+            {hasActiveGridFilters && (
+              <span className="text-[10px] font-extrabold bg-secondary text-white px-2 py-0.5 rounded-full">
+                Filtered
+              </span>
+            )}
           </h2>
           <p className="text-xs md:text-sm text-gray-500 font-medium mt-0.5">
             Showing {filteredProperties.length} hand-picked luxury spaces available for booking.
           </p>
         </div>
 
-        {/* Price Filter Chips */}
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-bold text-on-surface-variant mr-1">Price per night:</span>
-          {[
-            { id: "all", label: "All Prices" },
-            { id: "under-1000", label: `Under ${currencySymbol}${Math.round(1000 * currencyRate)}` },
-            { id: "1000-2000", label: `${currencySymbol}${Math.round(1000 * currencyRate)} - ${currencySymbol}${Math.round(2000 * currencyRate)}` },
-            { id: "over-2000", label: `${currencySymbol}${Math.round(2000 * currencyRate)}+` },
-          ].map(btn => (
-            <button
-              key={btn.id}
-              onClick={() => setPriceFilter(btn.id)}
-              className={`text-xs font-bold px-3 py-1.5 rounded-full transition-all border ${priceFilter === btn.id ? 'bg-primary text-white border-primary shadow-sm' : 'bg-surface-white text-on-surface-variant border-outline-variant hover:border-secondary'}`}
+        {/* Filter Tabs Container */}
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Price Filter Tabs */}
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Price:</span>
+            {[
+              { id: "all", label: "All Prices" },
+              { id: "under-1000", label: `Under ${currencySymbol}${Math.round(1000 * currencyRate)}` },
+              { id: "1000-2000", label: `${currencySymbol}${Math.round(1000 * currencyRate)} - ${currencySymbol}${Math.round(2000 * currencyRate)}` },
+              { id: "over-2000", label: `${currencySymbol}${Math.round(2000 * currencyRate)}+` },
+            ].map(btn => {
+              const isSelected = priceFilter === btn.id;
+              return (
+                <button
+                  key={btn.id}
+                  onClick={() => setPriceFilter(btn.id)}
+                  className={`pb-1 text-xs font-bold transition-all relative cursor-pointer ${
+                    isSelected ? 'text-primary font-extrabold' : 'text-gray-500 hover:text-gray-900 font-medium'
+                  }`}
+                >
+                  {btn.label}
+                  {isSelected && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full animate-fadeIn" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="w-[1px] h-4 bg-gray-200 hidden sm:block" />
+
+          {/* Quick Amenity Tabs */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Features:</span>
+            {[
+              { id: "all", label: "All Features", icon: "tune" },
+              { id: "pool", label: "Pool", icon: "pool" },
+              { id: "spa", label: "Spa", icon: "spa" },
+              { id: "cancellation", label: "Free Cancel", icon: "task_alt" },
+            ].map(btn => {
+              const isSelected = amenityFilter === btn.id;
+              return (
+                <button
+                  key={btn.id}
+                  onClick={() => setAmenityFilter(btn.id)}
+                  className={`pb-1 text-xs font-bold flex items-center gap-1 transition-all relative cursor-pointer ${
+                    isSelected ? 'text-secondary font-extrabold' : 'text-gray-500 hover:text-gray-900 font-medium'
+                  }`}
+                >
+                  <span className={`material-symbols-outlined text-xs ${isSelected ? 'text-secondary' : 'text-gray-400'}`}>{btn.icon}</span>
+                  <span>{btn.label}</span>
+                  {isSelected && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full animate-fadeIn" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {hasActiveGridFilters && (
+            <button 
+              onClick={resetAllGridFilters}
+              className="text-xs font-bold text-error hover:underline ml-2"
             >
-              {btn.label}
+              Reset
             </button>
-          ))}
+          )}
         </div>
       </div>
 

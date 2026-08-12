@@ -83,14 +83,17 @@ export default function App() {
   const isOwner = userRole === 'HotelOwner' || userRole === 3 || userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
   const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
 
+  // Enforce strict Role-Based Access Control (RBAC)
   useEffect(() => {
     if (currentView === "admin-panel" && !isAdmin) {
       setCurrentView("home");
+      addToast("Access Restricted: Requires Super Admin privileges.");
     } else if (currentView === "owner-dashboard" && !isOwner) {
       setCurrentView("home");
+      addToast("Access Restricted: Requires Hotel Owner account.");
     } else if (currentView === "checkout" && !user) {
       setCurrentView("home");
-      addToast("Please sign in to checkout.");
+      addToast("Please sign in to complete your checkout.");
     }
   }, [currentView, user, isAdmin, isOwner]);
 
@@ -172,6 +175,7 @@ export default function App() {
           />
         ) : currentView === "admin-panel" ? (
           <AdminPanel
+            user={user}
             onBack={() => setCurrentView("home")}
             onAddToast={addToast}
           />
@@ -220,7 +224,10 @@ export default function App() {
               activeCategory={selectedCategory}
               onSelectCategory={(catId) => {
                 setSelectedCategory(catId);
-                setCurrentView("search");
+                const propertiesElem = document.getElementById("properties");
+                if (propertiesElem) {
+                  propertiesElem.scrollIntoView({ behavior: "smooth" });
+                }
               }}
             />
 

@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 
-export default function AdminPanel({ onBack, onAddToast }) {
+export default function AdminPanel({ user, onBack, onAddToast }) {
   const [activeTab, setActiveTab] = useState('approvals');
   const [searchQuery, setSearchQuery] = useState('');
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const userRole = user?.role || user?.Role;
+  const isSuperAdmin = userRole === 'SuperAdmin' || userRole === 5 || !userRole; // SuperAdmin level check
+
+  // Pending hotel approvals state
   const [pendingHotels, setPendingHotels] = useState([
     {
       id: "req-1",
       title: "The Azure Coastal Retreat",
       type: "Resort",
-      typeColor: "bg-primary-fixed text-on-primary-fixed",
-      location: "Amalfi Coast, Italy",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCPbOwZyrlPsCu7m8hO7pS1XUkDPLtHZ1enxGmLuT7ybSDCzP5DH46lXzBu3mKWG-1Fl9CQd15885r0a0nnprrMkEn2sIZiR_GHXlMPj9Jan8TnsNkCD8bnF4ET7M_V1mVd_taF8EbBd_qpoRj5kBzBa9vUV19V3CzylNyOf2HSaMxTRLuYO3W6x5dlmFRLDrFH8mpMSQ0AIyJAMOLbuWFirig002MHlMfYueWwj-mz0W-rG9_GpsPo",
+      typeColor: "bg-primary text-white",
+      location: "Bentota, Sri Lanka",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
       kycVerified: true,
       docsComplete: true,
       missingTaxId: false,
@@ -22,9 +25,9 @@ export default function AdminPanel({ onBack, onAddToast }) {
       id: "req-2",
       title: "Urban Loft Suites",
       type: "Boutique",
-      typeColor: "bg-secondary-fixed text-on-secondary-fixed",
-      location: "Berlin, Germany",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCytkW5pwv8b6pyL5I6V6EVtATXuc5f8-Ro-x6VhXEf8GW2mnJHc1jMKcvPpoChJQTEdsLbclhUrgTGA91rx1K7heo5sQ1daS0-vx-TsGySzBwe9avLgOWMjjTBIakASJH7oCDITAxVJmWlsWzfPMBqkwH89LRGHiFt3yeP8jNszZ-qO1ShIJh3dfTjySAz0MHmV41RCP5bgYhgpBD-yW9f1M7qjLiRIVkJOdKQUiiRrMfQ0ADEetv2",
+      typeColor: "bg-secondary text-white",
+      location: "Colombo, Sri Lanka",
+      image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80",
       kycVerified: true,
       docsComplete: false,
       missingTaxId: true,
@@ -32,10 +35,10 @@ export default function AdminPanel({ onBack, onAddToast }) {
     },
     {
       id: "req-3",
-      title: "Serene Alpine Chalet",
+      title: "Serene Tea Chalet",
       type: "Villa",
-      typeColor: "bg-tertiary-fixed text-on-tertiary-fixed",
-      location: "Zermatt, Switzerland",
+      typeColor: "bg-amber-600 text-white",
+      location: "Nuwara Eliya, Sri Lanka",
       image: "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=800&q=80",
       kycVerified: true,
       docsComplete: true,
@@ -43,6 +46,20 @@ export default function AdminPanel({ onBack, onAddToast }) {
       status: "pending"
     }
   ]);
+
+  // System users management state
+  const [usersList, setUsersList] = useState([
+    { id: 1, name: "Rasika Prabath", email: "rasika@staysphere.com", role: "SuperAdmin", status: "Active", joined: "Jan 2026" },
+    { id: 2, name: "Kavindu Perera", email: "kavindu@grandhorizon.lk", role: "HotelOwner", status: "Active", joined: "Feb 2026" },
+    { id: 3, name: "Sarah Jenkins", email: "sarah.j@gmail.com", role: "Customer", status: "Active", joined: "Mar 2026" },
+    { id: 4, name: "Dinesh Silva", email: "dinesh@villaslk.com", role: "HotelOwner", status: "Active", joined: "Apr 2026" },
+    { id: 5, name: "Amara Wickrama", email: "amara@yahoo.com", role: "Customer", status: "Suspended", joined: "May 2026" }
+  ]);
+
+  // System Settings state
+  const [commissionRate, setCommissionRate] = useState(8.0);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [emailNotifications, setEmailNotifications] = useState(true);
 
   const handleApprove = (id, title) => {
     setPendingHotels(prev => prev.map(item => item.id === id ? { ...item, status: 'approved' } : item));
@@ -58,79 +75,84 @@ export default function AdminPanel({ onBack, onAddToast }) {
     onAddToast && onAddToast(`Information request sent to owner of "${title}"`);
   };
 
+  const handleUserRoleChange = (userId, newRole) => {
+    if (!isSuperAdmin) {
+      onAddToast && onAddToast("Access Denied: Only SuperAdmin can modify user roles.");
+      return;
+    }
+    setUsersList(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+    onAddToast && onAddToast(`Updated user role to ${newRole}`);
+  };
+
+  const handleToggleUserStatus = (userId) => {
+    if (!isSuperAdmin) {
+      onAddToast && onAddToast("Access Denied: Only SuperAdmin can suspend user accounts.");
+      return;
+    }
+    setUsersList(prev => prev.map(u => u.id === userId ? { ...u, status: u.status === 'Active' ? 'Suspended' : 'Active' } : u));
+    onAddToast && onAddToast("Updated user status");
+  };
+
   const activeRequests = pendingHotels.filter(h => h.status === 'pending');
 
+  const filteredUsers = usersList.filter(u => 
+    u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="bg-background text-on-surface font-body-md h-screen overflow-hidden flex flex-col antialiased w-full">
-      {/* TopNavBar */}
-      <header className="bg-surface-white text-primary border-b border-outline-variant shadow-sm docked full-width top-0 z-50 shrink-0">
-        <div className="flex justify-between items-center w-full px-4 md:px-margin-desktop max-w-container-max mx-auto h-20">
-          {/* Brand & Search */}
-          <div className="flex items-center gap-gutter">
-            <button onClick={onBack} className="text-headline-md font-headline-md font-bold text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span className="material-symbols-outlined text-secondary filled-icon text-3xl">travel_explore</span>
-              <span>StaySphere</span>
+    <div className="bg-background text-on-surface font-sans h-screen overflow-hidden flex flex-col antialiased w-full">
+      {/* Top Header */}
+      <header className="bg-surface-white text-primary border-b border-outline-variant shadow-sm top-0 z-50 shrink-0">
+        <div className="flex justify-between items-center w-full px-6 h-20">
+          <div className="flex items-center gap-6">
+            <button onClick={onBack} className="text-xl font-extrabold text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <span className="material-symbols-outlined text-secondary text-2xl">admin_panel_settings</span>
+              <span>StaySphere Admin</span>
             </button>
-            <div className="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant focus-within:border-secondary transition-colors">
-              <span className="material-symbols-outlined text-outline mr-2">search</span>
+            <div className="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant">
+              <span className="material-symbols-outlined text-gray-400 mr-2 text-sm">search</span>
               <input
                 type="text"
-                placeholder="Search system..."
+                placeholder="Search users or hotels..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent border-none outline-none text-body-md text-on-surface w-64 placeholder-outline focus:ring-0"
+                className="bg-transparent border-none outline-none text-xs font-semibold text-on-surface w-60 placeholder-gray-400"
               />
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8">
-            <button onClick={onBack} className="text-on-surface-variant hover:text-secondary transition-colors font-label-md text-label-md font-bold">
-              Customer Site
-            </button>
-            <span className="text-secondary font-label-md text-label-md font-extrabold border-b-2 border-secondary pb-1">
-              Super Admin Panel
+          <div className="flex items-center gap-4">
+            <span className={`text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-wider ${isSuperAdmin ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"}`}>
+              {isSuperAdmin ? "Super Admin" : "Operations Admin"}
             </span>
-          </nav>
-
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <button onClick={onBack} className="font-label-md text-label-md font-bold text-secondary hidden md:block hover:text-primary transition-colors">
-              Exit Admin
+            <button onClick={onBack} className="text-xs font-bold text-secondary hover:text-primary transition-colors flex items-center gap-1">
+              <span className="material-symbols-outlined text-base">exit_to_app</span>
+              <span>Exit Admin</span>
             </button>
-            <div className="h-10 w-10 rounded-full bg-surface-container overflow-hidden border border-outline-variant shrink-0">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCh-WC6_wqZQmR12dxqAICFTNqcr6W_7dPt5Es0LTN3h-q6yw5JOW9laivn3ortxHfFMONeWFUxZMSkhFGeT5woDRUJGLr7w1_NcH3ML88BYveRv8fMqePpkWWr0EiS81EaM3yHQhw35RhMqKx6_FU84Nq5qXwscC54-Fx5STzvIHTsoRW0boQRzjnhAAZlT0DbKjHY93YIWsH2349-Yf7-PEVRkbnZ9RqiOf4_x0QHFjhGc8Ef01Wv"
-                alt="Super Admin profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
           </div>
         </div>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* SideNavBar */}
-        <aside className="bg-surface-white text-primary border-r border-outline-variant h-full w-64 shrink-0 hidden md:flex flex-col gap-4 py-8 px-4 z-40">
-          <div className="flex items-center gap-4 px-4 mb-6">
-            <div className="h-12 w-12 rounded-full overflow-hidden bg-surface-container shrink-0 border border-outline-variant">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQolVUCYaWkpVreiLTytg-rtGzMqNXX4dIy-r5qy-ncGlB_EhEgdkCAd1QbgrtDAPoyDnXUhggyxm--obzB41pitnBEMPxAfI9AVWnktwfUm6e7qdD_LN1d9m_LCYDUYbS_48MY6GJuPEppo2I03Bo0d9wCBFXWnDUyK4EIdhIPSoUy4VvWaD9VMw5Gabs2y2u88rWVDERbpN3lJJKa84P0YjkHsslPOBidOwmRHK9GkWf2M6fhMdh"
-                alt="Super Admin avatar"
-                className="w-full h-full object-cover"
-              />
+        <aside className="bg-surface-white text-primary border-r border-outline-variant h-full w-64 shrink-0 hidden md:flex flex-col gap-3 py-6 px-4 z-40">
+          <div className="flex items-center gap-3 px-3 mb-4 border-b border-outline-variant/40 pb-4">
+            <div className="w-10 h-10 rounded-full bg-secondary/10 text-secondary font-bold flex items-center justify-center text-sm">
+              {isSuperAdmin ? "SA" : "AD"}
             </div>
             <div className="min-w-0">
-              <h3 className="font-headline-sm text-headline-sm text-primary truncate">Welcome back</h3>
-              <p className="font-body-sm text-body-sm text-on-surface-variant font-bold truncate">Super Admin</p>
+              <h3 className="font-bold text-xs text-primary truncate">{isSuperAdmin ? "Super Admin" : "System Admin"}</h3>
+              <p className="text-[11px] text-on-surface-variant font-medium truncate">{isSuperAdmin ? "Full Authority" : "Operations Mode"}</p>
             </div>
           </div>
 
-          <nav className="flex flex-col gap-2 flex-1">
+          <nav className="flex flex-col gap-1.5 flex-1">
             {[
-              { id: 'users', label: 'User Management', icon: 'group' },
               { id: 'approvals', label: 'Hotel Approvals', icon: 'domain_verification' },
-              { id: 'analytics', label: 'System Analytics', icon: 'monitoring' },
+              { id: 'users', label: 'User & Role Management', icon: 'group' },
+              { id: 'analytics', label: 'Platform Analytics', icon: 'monitoring' },
               { id: 'settings', label: 'Global Settings', icon: 'settings' }
             ].map(item => {
               const isActive = activeTab === item.id;
@@ -138,227 +160,243 @@ export default function AdminPanel({ onBack, onAddToast }) {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg font-label-md text-label-md transition-all text-left ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
                     isActive
-                      ? 'text-on-primary font-bold bg-secondary-container shadow-sm scale-95'
+                      ? 'text-white bg-primary shadow-sm'
                       : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
                   }`}
                 >
-                  <span className="material-symbols-outlined">{item.icon}</span>
+                  <span className="material-symbols-outlined text-lg">{item.icon}</span>
                   <span>{item.label}</span>
                 </button>
               );
             })}
           </nav>
-
-          <div className="mt-auto px-4">
-            <button
-              onClick={() => onAddToast && onAddToast("System log download initialized.")}
-              className="w-full py-3 border border-outline text-primary font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-colors font-bold cursor-pointer"
-            >
-              View All Activity
-            </button>
-          </div>
         </aside>
 
         {/* Main Canvas */}
-        <main className="flex-1 overflow-y-auto bg-background p-margin-mobile md:p-margin-desktop">
-          <div className="max-w-container-max mx-auto space-y-gutter">
-            {/* Page Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+        <main className="flex-1 overflow-y-auto bg-background p-6">
+          <div className="max-w-container-max mx-auto space-y-6 pb-12">
+            
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant/40 pb-4">
               <div>
-                <h1 className="font-headline-xl text-headline-xl text-primary mb-1">
-                  {activeTab === 'approvals' ? 'Pending Hotel Approvals' : activeTab === 'users' ? 'User & Partner Management' : activeTab === 'analytics' ? 'Global Platform Analytics' : 'Global System Settings'}
+                <h1 className="text-xl font-extrabold text-primary">
+                  {activeTab === 'approvals' ? 'Pending Hotel Approvals' : activeTab === 'users' ? 'User Roles & Privileges' : activeTab === 'analytics' ? 'Global Platform Performance' : 'System Configuration Settings'}
                 </h1>
-                <p className="font-body-lg text-body-lg text-on-surface-variant">
-                  {activeTab === 'approvals' ? 'Review and manage incoming property listings across all regions.' : 'Control user privileges, owner verification status, and security compliance.'}
+                <p className="text-xs text-on-surface-variant mt-0.5 font-medium">
+                  {activeTab === 'approvals' ? 'Review property partner applications before publication.' : 'Control user access roles, verify hotel owners, and enforce compliance.'}
                 </p>
-              </div>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => onAddToast && onAddToast("Filter options opened")}
-                  className="bg-surface-white px-4 py-2 rounded-lg border border-outline-variant flex items-center gap-2 shadow-sm font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-secondary">filter_list</span>
-                  <span>Filter Requests</span>
-                </button>
               </div>
             </div>
 
-            {/* Bento Grid Layout */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-gutter">
-              {/* Main Content Area: Approvals Table (Spans 2 columns) */}
-              <div className="xl:col-span-2 space-y-gutter">
-                <div className="bg-surface-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
-                  <div className="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
-                    <h2 className="font-headline-sm text-headline-sm text-primary">Requires Action</h2>
-                    <span className="bg-error-container text-on-error-container px-3 py-1 rounded-full font-label-sm text-label-sm font-bold">
-                      {activeRequests.length} Pending
-                    </span>
+            {/* TAB: APPROVALS */}
+            {activeTab === 'approvals' && (
+              <div className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
+                <div className="p-4 bg-surface-container-low border-b border-outline-variant flex justify-between items-center">
+                  <h3 className="font-bold text-xs text-primary uppercase tracking-wider">Listing Applications</h3>
+                  <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-3 py-1 rounded-full">
+                    {activeRequests.length} Pending Approval
+                  </span>
+                </div>
+
+                {activeRequests.length === 0 ? (
+                  <div className="p-12 text-center text-on-surface-variant">
+                    <span className="material-symbols-outlined text-5xl text-emerald-600 mb-2">task_alt</span>
+                    <h4 className="font-bold text-base text-primary">All Applications Reviewed!</h4>
+                    <p className="text-xs mt-1">There are no pending hotel listings awaiting verification.</p>
                   </div>
-
-                  {/* Pending Hotel Cards */}
-                  {activeRequests.length === 0 ? (
-                    <div className="p-12 text-center text-on-surface-variant">
-                      <span className="material-symbols-outlined text-5xl text-success mb-2">task_alt</span>
-                      <h4 className="font-headline-sm text-headline-sm text-primary">All Caught Up!</h4>
-                      <p className="font-body-sm text-body-sm mt-1">There are currently no pending hotel approval requests.</p>
-                    </div>
-                  ) : (
-                    activeRequests.map((hotel) => (
-                      <div
-                        key={hotel.id}
-                        className="p-6 border-b border-outline-variant hover:bg-surface-container-low transition-colors flex flex-col md:flex-row gap-6 items-start md:items-center"
-                      >
-                        <div className="w-32 h-24 rounded-lg overflow-hidden shrink-0 bg-surface-container border border-outline-variant">
-                          <img
-                            src={hotel.image}
-                            alt={hotel.title}
-                            className="w-full h-full object-cover"
-                          />
+                ) : (
+                  activeRequests.map((hotel) => (
+                    <div key={hotel.id} className="p-5 border-b border-outline-variant/50 hover:bg-surface-container-low/40 transition-colors flex flex-col md:flex-row gap-5 items-start md:items-center">
+                      <img src={hotel.image} alt={hotel.title} className="w-28 h-20 rounded-xl object-cover shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-bold text-sm text-primary">{hotel.title}</h4>
+                          <span className={`${hotel.typeColor} text-[10px] font-extrabold px-2 py-0.5 rounded-md`}>
+                            {hotel.type}
+                          </span>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <h3 className="font-headline-sm text-headline-sm text-on-surface">{hotel.title}</h3>
-                            <span className={`${hotel.typeColor} px-2 py-0.5 rounded font-label-sm text-label-sm font-bold`}>
-                              {hotel.type}
+                        <p className="text-xs text-on-surface-variant flex items-center gap-1 mb-2 font-medium">
+                          <span className="material-symbols-outlined text-sm text-secondary">location_on</span>
+                          {hotel.location}
+                        </p>
+                        <div className="flex gap-3 text-[11px] font-bold">
+                          {hotel.kycVerified && (
+                            <span className="text-emerald-600 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-sm">verified</span> KYC Verified
                             </span>
-                          </div>
-                          <p className="font-body-sm text-body-sm text-on-surface-variant mb-2 flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[16px]">location_on</span>
-                            {hotel.location}
-                          </p>
-                          <div className="flex flex-wrap gap-4 font-label-sm text-label-sm text-on-surface-variant">
-                            {hotel.kycVerified && (
-                              <span className="flex items-center gap-1 text-success font-semibold">
-                                <span className="material-symbols-outlined text-[16px]">verified_user</span> KYC Verified
-                              </span>
-                            )}
-                            {hotel.docsComplete ? (
-                              <span className="flex items-center gap-1 text-success font-semibold">
-                                <span className="material-symbols-outlined text-[16px]">description</span> Docs Complete
-                              </span>
-                            ) : (
-                              <span className="flex items-center gap-1 text-tertiary-fixed-dim font-semibold">
-                                <span className="material-symbols-outlined text-[16px]">warning</span> Missing Tax ID
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex gap-3 w-full md:w-auto shrink-0">
-                          {hotel.missingTaxId ? (
-                            <>
-                              <button
-                                onClick={() => handleRequestInfo(hotel.title)}
-                                className="flex-1 md:flex-none px-4 py-2 border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-low transition-colors font-bold text-center cursor-pointer"
-                              >
-                                Request Info
-                              </button>
-                              <button
-                                disabled
-                                className="flex-1 md:flex-none px-4 py-2 bg-success text-on-primary font-label-md text-label-md rounded-lg font-bold text-center opacity-50 cursor-not-allowed"
-                              >
-                                Approve
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => handleReject(hotel.id, hotel.title)}
-                                className="flex-1 md:flex-none px-4 py-2 border border-error text-error font-label-md text-label-md rounded-lg hover:bg-error-container transition-colors font-bold text-center cursor-pointer"
-                              >
-                                Reject
-                              </button>
-                              <button
-                                onClick={() => handleApprove(hotel.id, hotel.title)}
-                                className="flex-1 md:flex-none px-4 py-2 bg-success text-on-primary font-label-md text-label-md rounded-lg hover:bg-opacity-90 transition-colors font-bold text-center cursor-pointer"
-                              >
-                                Approve
-                              </button>
-                            </>
+                          )}
+                          {hotel.missingTaxId && (
+                            <span className="text-amber-600 flex items-center gap-1">
+                              <span className="material-symbols-outlined text-sm">warning</span> Tax ID Required
+                            </span>
                           )}
                         </div>
                       </div>
-                    ))
+
+                      <div className="flex gap-2 w-full md:w-auto shrink-0">
+                        {hotel.missingTaxId ? (
+                          <button onClick={() => handleRequestInfo(hotel.title)} className="px-3.5 py-2 border border-gray-300 rounded-xl text-xs font-bold hover:bg-gray-50">
+                            Request Info
+                          </button>
+                        ) : (
+                          <>
+                            <button onClick={() => handleReject(hotel.id, hotel.title)} className="px-3.5 py-2 border border-rose-300 text-rose-600 rounded-xl text-xs font-bold hover:bg-rose-50">
+                              Reject
+                            </button>
+                            <button onClick={() => handleApprove(hotel.id, hotel.title)} className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold hover:bg-emerald-700 shadow">
+                              Approve Listing
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* TAB: USERS & ROLES */}
+            {activeTab === 'users' && (
+              <div className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-surface-container-low text-on-surface-variant text-[11px] font-bold uppercase tracking-wider border-b border-outline-variant">
+                        <th className="p-4">User</th>
+                        <th className="p-4">Email</th>
+                        <th className="p-4">Role</th>
+                        <th className="p-4">Status</th>
+                        <th className="p-4">Joined</th>
+                        <th className="p-4 text-right">Role Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-outline-variant/40 text-xs font-semibold">
+                      {filteredUsers.map(u => (
+                        <tr key={u.id} className="hover:bg-surface-container-low/50">
+                          <td className="p-4 font-bold text-primary">{u.name}</td>
+                          <td className="p-4 text-on-surface-variant">{u.email}</td>
+                          <td className="p-4">
+                            <select
+                              disabled={!isSuperAdmin}
+                              value={u.role}
+                              onChange={(e) => handleUserRoleChange(u.id, e.target.value)}
+                              className={`border border-outline-variant rounded-lg p-1 text-xs font-bold bg-white cursor-pointer ${!isSuperAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            >
+                              <option value="Customer">Customer</option>
+                              <option value="HotelOwner">HotelOwner</option>
+                              <option value="Admin">Admin</option>
+                              <option value="SuperAdmin">SuperAdmin</option>
+                            </select>
+                          </td>
+                          <td className="p-4">
+                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold ${u.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>
+                              {u.status}
+                            </span>
+                          </td>
+                          <td className="p-4 text-on-surface-variant">{u.joined}</td>
+                          <td className="p-4 text-right">
+                            <button
+                              disabled={!isSuperAdmin}
+                              onClick={() => handleToggleUserStatus(u.id)}
+                              className={`text-xs font-bold ${isSuperAdmin ? 'text-secondary hover:underline cursor-pointer' : 'text-gray-400 cursor-not-allowed'}`}
+                            >
+                              {u.status === 'Active' ? 'Suspend' : 'Activate'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: ANALYTICS */}
+            {activeTab === 'analytics' && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm">
+                  <span className="text-xs font-bold text-on-surface-variant uppercase">Total Platform Volume</span>
+                  <p className="text-3xl font-extrabold text-primary mt-2">$1,240,500</p>
+                  <span className="text-[11px] text-emerald-600 font-bold block mt-1">+18.5% YoY Growth</span>
+                </div>
+                <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm">
+                  <span className="text-xs font-bold text-on-surface-variant uppercase">Active Hotel Listings</span>
+                  <p className="text-3xl font-extrabold text-secondary mt-2">1,420 Hotels</p>
+                  <span className="text-[11px] text-on-surface-variant font-medium block mt-1">Across 12 Regions</span>
+                </div>
+                <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm">
+                  <span className="text-xs font-bold text-on-surface-variant uppercase">Redis Cache Hit Rate</span>
+                  <p className="text-3xl font-extrabold text-emerald-600 mt-2">99.8%</p>
+                  <span className="text-[11px] text-on-surface-variant font-medium block mt-1">Average Response Latency: 12ms</span>
+                </div>
+              </div>
+            )}
+
+            {/* TAB: SETTINGS */}
+            {activeTab === 'settings' && (
+              <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm max-w-2xl space-y-6">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <h3 className="text-base font-bold text-primary">Global Platform Configuration</h3>
+                  {!isSuperAdmin && (
+                    <span className="bg-amber-100 text-amber-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full">
+                      🔒 Read-Only (Requires SuperAdmin)
+                    </span>
                   )}
-
-                  <div className="p-4 bg-surface-bright text-center">
-                    <button
-                      onClick={() => onAddToast && onAddToast("Loaded all pending requests.")}
-                      className="text-secondary font-label-md text-label-md font-bold hover:underline cursor-pointer"
-                    >
-                      View All Pending Requests ({activeRequests.length}+)
-                    </button>
-                  </div>
                 </div>
+                
+                <div>
+                  <label className="text-xs font-bold text-on-surface block mb-1">Platform Commission Rate (%)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    disabled={!isSuperAdmin}
+                    value={commissionRate}
+                    onChange={(e) => setCommissionRate(Number(e.target.value))}
+                    className={`w-full max-w-xs border border-outline-variant rounded-xl p-2.5 text-xs font-bold ${!isSuperAdmin ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  />
+                  <p className="text-[11px] text-on-surface-variant mt-1">Applied to all property booking transactions.</p>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-outline-variant/40">
+                  <div>
+                    <h4 className="text-xs font-bold text-primary">System Maintenance Mode</h4>
+                    <p className="text-[11px] text-on-surface-variant">Temporarily disable customer bookings during upgrades.</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    disabled={!isSuperAdmin}
+                    checked={maintenanceMode}
+                    onChange={(e) => setMaintenanceMode(e.target.checked)}
+                    className="w-5 h-5 rounded accent-secondary cursor-pointer"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-outline-variant/40">
+                  <div>
+                    <h4 className="text-xs font-bold text-primary">Automated Email Notifications</h4>
+                    <p className="text-[11px] text-on-surface-variant">Send instant confirmation receipts to guests and hotel owners.</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    disabled={!isSuperAdmin}
+                    checked={emailNotifications}
+                    onChange={(e) => setEmailNotifications(e.target.checked)}
+                    className="w-5 h-5 rounded accent-secondary cursor-pointer"
+                  />
+                </div>
+
+                <button
+                  disabled={!isSuperAdmin}
+                  onClick={() => onAddToast && onAddToast("Saved system settings successfully!")}
+                  className={`text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow transition-colors ${isSuperAdmin ? 'bg-primary hover:bg-secondary cursor-pointer' : 'bg-gray-400 cursor-not-allowed'}`}
+                >
+                  Save Configurations
+                </button>
               </div>
+            )}
 
-              {/* Side Panel: Analytics & Health */}
-              <div className="space-y-gutter">
-                {/* System Health Cards */}
-                <div className="bg-surface-white rounded-xl border border-outline-variant p-6 shadow-[0_4px_12px_rgba(0,53,128,0.06)]">
-                  <h3 className="font-headline-sm text-headline-sm text-primary mb-6 flex items-center gap-2">
-                    <span className="material-symbols-outlined text-secondary">memory</span>
-                    System Health
-                  </h3>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-surface-container-low">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-success text-[18px]">database</span>
-                        </div>
-                        <span className="font-label-md text-label-md text-on-surface">Database Status</span>
-                      </div>
-                      <span className="text-success font-label-md text-label-md font-bold">Optimal</span>
-                    </div>
-
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-surface-container-low">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-success/20 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-success text-[18px]">speed</span>
-                        </div>
-                        <span className="font-label-md text-label-md text-on-surface">Caching Active</span>
-                      </div>
-                      <span className="text-success font-label-md text-label-md font-bold">99.8% Hit Rate</span>
-                    </div>
-
-                    <div className="flex justify-between items-center p-3 rounded-lg bg-surface-container-low">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-tertiary-fixed-dim/20 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">router</span>
-                        </div>
-                        <span className="font-label-md text-label-md text-on-surface">API Latency</span>
-                      </div>
-                      <span className="text-tertiary-fixed-dim font-label-md text-label-md font-bold">142ms</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Revenue Chart Placeholder */}
-                <div className="bg-surface-white rounded-xl border border-outline-variant p-6 shadow-[0_4px_12px_rgba(0,53,128,0.06)] relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-gradient-to-br from-surface-container-low to-surface-white z-0"></div>
-                  <div className="relative z-10">
-                    <h3 className="font-headline-sm text-headline-sm text-primary mb-2">Revenue Distribution</h3>
-                    <p className="font-body-sm text-body-sm text-on-surface-variant mb-6">Across active regions (30 Days)</p>
-
-                    {/* Chart Bars */}
-                    <div className="h-48 flex items-end gap-2 justify-between">
-                      <div className="w-1/4 bg-primary-container rounded-t-sm h-[80%] hover:opacity-80 transition-opacity"></div>
-                      <div className="w-1/4 bg-secondary-container rounded-t-sm h-[60%] hover:opacity-80 transition-opacity"></div>
-                      <div className="w-1/4 bg-tertiary-fixed-dim rounded-t-sm h-[40%] hover:opacity-80 transition-opacity"></div>
-                      <div className="w-1/4 bg-outline-variant rounded-t-sm h-[30%] hover:opacity-80 transition-opacity"></div>
-                    </div>
-                    <div className="flex justify-between mt-4 font-label-sm text-label-sm text-on-surface-variant font-bold">
-                      <span>EU</span>
-                      <span>NA</span>
-                      <span>APAC</span>
-                      <span>LATAM</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </main>
       </div>

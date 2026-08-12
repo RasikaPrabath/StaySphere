@@ -7,38 +7,64 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
   const [notificationCount, setNotificationCount] = useState(3);
   const [showNotifications, setShowNotifications] = useState(false);
 
-  const activeProperties = [
+  // Mock data states
+  const [hotelsList, setHotelsList] = useState([
     {
       id: "owner-prop-1",
       title: "The Grand Horizon Resort",
-      location: "Miami, FL",
+      location: "Colombo, Sri Lanka",
       occupancy: "92%",
-      occColor: "bg-success",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCLXTpMDlBwFEjtXm_4SVf_8TtY4NOYhThaXfhhzN5uwsuxBZtav2KrEvDiMheryQDC7i63C9q1UpxOwh5qIOYxwNbG47IWyLshdcZ_T8CPDq3n3i_wxg10b2salPWn2nQ1cIPm3pclJ-wr9dCxza-Ao9XBpQ5YJYQj1HbpT4E9-z3c_eZL4JoU1kXPqm33M3TVaheLLHTA92gnvISsmy1gXkujGcYLX71Dc_xZLFCdoFxDHUj2D2JO",
+      occColor: "bg-emerald-500",
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
       revenue: "$64,200",
-      rooms: "45 Rooms"
+      rooms: "45 Rooms",
+      price: "$280 / night",
+      status: "Active"
     },
     {
       id: "owner-prop-2",
-      title: "Urban Oasis Boutique",
-      location: "Chicago, IL",
+      title: "Urban Oasis Boutique Villa",
+      location: "Galle, Sri Lanka",
       occupancy: "76%",
-      occColor: "bg-tertiary-fixed-dim",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCE-0gX-FUA7jVMmOnvkWQPa1B6ns8HE03cr0Q1BKK2ks95ggGykqHt9lQ9dCYgwrYDR1z0pxMRCyteNELhyZELmE_2OWM2IienldzhpeNXfJ_e5nCcSEXIiAVA4ZcHlfcKK51gCUpGeOlwj2KMP8ld6SVuGT-xiitN3rF-zZ68CJWauKiz_FTgvcRCXyADACvnzJ6zncDfBHknIG2eTvFB5yOEVsKPX5s13C-dB7RGd43L7rxUuHTE",
+      occColor: "bg-amber-500",
+      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
       revenue: "$42,800",
-      rooms: "30 Rooms"
+      rooms: "30 Rooms",
+      price: "$320 / night",
+      status: "Active"
     },
     {
       id: "owner-prop-3",
-      title: "Alpine Crest Lodge",
-      location: "Aspen, CO",
+      title: "Alpine Crest Tea Sanctuary",
+      location: "Ella, Sri Lanka",
       occupancy: "88%",
-      occColor: "bg-success",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAAGAX57mn-PblNuX_wa427NgwiSvj9XEk3gAG98SNEIPdlzPBqXyCovs-jr81cp69wYKn9ZL_4GHl7UE0sEI1jdBK9vVADYQrsQLriNxMmxlS4XB_VzyH-vZ_O2Ko4eVjZBxx2VLjLsP8nJX7QZ1bjxEbUESaKolwG5MRaCS1-jUYIvQw-9lZxi0wBknNHB50sMF_2TyWrWBlex9AdeT9uhJFqVb0VqryHraGIvTOOfAR0p1G4zifF",
+      occColor: "bg-emerald-500",
+      image: "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=800&q=80",
       revenue: "$35,500",
-      rooms: "25 Rooms"
+      rooms: "25 Rooms",
+      price: "$190 / night",
+      status: "Active"
     }
-  ];
+  ]);
+
+  const [bookingsList, setBookingsList] = useState([
+    { id: "BK-9021", guest: "Kasun Perera", property: "The Grand Horizon Resort", checkIn: "Oct 15, 2026", checkOut: "Oct 18, 2026", guests: 2, amount: "$840", status: "Confirmed" },
+    { id: "BK-8842", guest: "Elena Rostova", property: "Urban Oasis Villa", checkIn: "Oct 20, 2026", checkOut: "Oct 25, 2026", guests: 3, amount: "$1,600", status: "Pending" },
+    { id: "BK-7721", guest: "David Miller", property: "Alpine Crest Sanctuary", checkIn: "Oct 12, 2026", checkOut: "Oct 14, 2026", guests: 1, amount: "$380", status: "Checked-In" },
+    { id: "BK-6530", guest: "Nimali Fernando", property: "The Grand Horizon Resort", checkIn: "Nov 01, 2026", checkOut: "Nov 05, 2026", guests: 4, amount: "$1,120", status: "Confirmed" },
+    { id: "BK-5412", guest: "James Wilson", property: "Urban Oasis Villa", checkIn: "Nov 10, 2026", checkOut: "Nov 12, 2026", guests: 2, amount: "$640", status: "Cancelled" }
+  ]);
+
+  const [staffList, setStaffList] = useState([
+    { id: 1, name: "Sahan Wickramasinghe", role: "General Manager", hotel: "The Grand Horizon Resort", phone: "+94 77 123 4567", status: "Active" },
+    { id: 2, name: "Dilini Jayawardena", role: "Front Desk Supervisor", hotel: "Urban Oasis Villa", phone: "+94 71 987 6543", status: "Active" },
+    { id: 3, name: "Ruwan Kumara", role: "Head Housekeeper", hotel: "Alpine Crest Sanctuary", phone: "+94 75 456 7890", status: "Active" }
+  ]);
+
+  const [newStaffName, setNewStaffName] = useState("");
+  const [newStaffRole, setNewStaffRole] = useState("Front Desk Agent");
+  const [newStaffHotel, setNewStaffHotel] = useState("The Grand Horizon Resort");
+  const [showAddStaffModal, setShowAddStaffModal] = useState(false);
 
   const chartData = [
     { month: "Jan", amount: 80000, label: "$80,000", height: "40%" },
@@ -49,11 +75,30 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
     { month: "Jun", amount: 142500, label: "$142,500", height: "75%", current: true }
   ];
 
+  const handleAddStaff = (e) => {
+    e.preventDefault();
+    if (!newStaffName) return;
+    const newStaff = {
+      id: Date.now(),
+      name: newStaffName,
+      role: newStaffRole,
+      hotel: newStaffHotel,
+      phone: "+94 77 000 0000",
+      status: "Active"
+    };
+    setStaffList([...staffList, newStaff]);
+    setNewStaffName("");
+    setShowAddStaffModal(false);
+  };
+
+  const handleUpdateBookingStatus = (id, newStatus) => {
+    setBookingsList(prev => prev.map(b => b.id === id ? { ...b, status: newStatus } : b));
+  };
+
   return (
     <div className="bg-background text-on-surface font-sans antialiased flex h-screen overflow-hidden w-full">
-      {/* SideNavBar (Desktop & Mobile) */}
+      {/* SideNavBar */}
       <nav className={`fixed md:static left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-white z-30 flex flex-col transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}`}>
-        {/* Brand/Header */}
         <div className="px-6 py-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <button onClick={onBack} className="text-headline-md font-headline-md font-bold text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
@@ -67,13 +112,13 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
 
           <div className="flex items-center gap-3 mt-2 pt-4 border-t border-outline-variant/40">
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLXbebGz8JTvKaAjKSj1dQxESnXmxXL5wSgGgCbgON7Vos-1UnegMb6GpY2JWngi6XPlU4huTDd90F9vCzaSpjGeWzV6OKe6dL0lwklapqybcud-JfragBg0UZvV2DZCozRHx3oO8W5z84DCjgtr_IWUwW4BrlvavCsU60DYm863vfso53_y0MBpjK1TgBHTW5X-2I84PkbKPec3Vba5fOMSGwi4ndmmzxVuesUe9mMY-zomVHQ7zi"
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
               alt="Owner headshot"
               className="w-10 h-10 rounded-full object-cover shadow-sm border border-outline-variant shrink-0"
             />
             <div className="flex flex-col min-w-0">
-              <span className="font-label-md text-label-md text-on-surface truncate">Welcome back</span>
-              <span className="font-label-sm text-label-sm text-on-surface-variant font-semibold truncate">Owner Dashboard</span>
+              <span className="font-label-md text-label-md text-on-surface truncate font-bold">Property Partner</span>
+              <span className="font-label-sm text-label-sm text-secondary font-bold truncate">Hotel Owner Portal</span>
             </div>
           </div>
         </div>
@@ -83,27 +128,22 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
           {[
             { id: 'overview', label: 'Overview', icon: 'dashboard' },
             { id: 'hotels', label: 'My Hotels', icon: 'apartment' },
-            { id: 'bookings', label: 'Bookings', icon: 'calendar_month' },
-            { id: 'revenue', label: 'Revenue', icon: 'payments' },
-            { id: 'staff', label: 'Staff', icon: 'group' }
+            { id: 'bookings', label: 'Guest Bookings', icon: 'calendar_month' },
+            { id: 'revenue', label: 'Revenue & Payouts', icon: 'payments' },
+            { id: 'staff', label: 'Staff Management', icon: 'group' }
           ].map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
-                className={`flex items-center gap-3 px-4 py-3 font-label-md text-label-md rounded-lg transition-all text-left ${
+                className={`flex items-center gap-3 px-4 py-3 font-label-md text-label-md rounded-xl transition-all text-left cursor-pointer ${
                   isActive
-                    ? 'text-primary font-bold bg-primary-container/10 scale-95'
+                    ? 'text-primary font-bold bg-primary-container/15 border-l-4 border-primary'
                     : 'text-on-surface-variant hover:bg-surface-container-low hover:text-primary'
                 }`}
               >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontVariationSettings: isActive ? "'FILL' 1" : "'FILL' 0" }}
-                >
-                  {item.icon}
-                </span>
+                <span className="material-symbols-outlined">{item.icon}</span>
                 <span>{item.label}</span>
               </button>
             );
@@ -114,35 +154,35 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
         <div className="p-4 mt-auto border-t border-outline-variant/30">
           <button
             onClick={() => onBack && onBack()}
-            className="w-full py-2.5 bg-surface-container-high hover:bg-outline-variant/40 text-primary font-label-md text-label-md rounded-lg transition-colors flex items-center justify-center gap-2 mb-2"
+            className="w-full py-2.5 bg-surface-container-high hover:bg-outline-variant/40 text-primary font-label-md text-label-md rounded-lg transition-colors flex items-center justify-center gap-2 mb-2 font-bold cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">arrow_back</span>
-            Back to Customer Site
+            Back to Guest View
           </button>
           <button
             onClick={() => onAddProperty && onAddProperty()}
-            className="w-full py-3 bg-secondary text-on-primary font-label-md text-label-md rounded-lg shadow-[0_4px_12px_rgba(0,53,128,0.08)] hover:bg-secondary-container transition-colors font-bold cursor-pointer"
+            className="w-full py-3 bg-secondary text-white font-label-md text-label-md rounded-xl shadow-md hover:bg-secondary-container transition-colors font-bold cursor-pointer flex items-center justify-center gap-2"
           >
-            + Add Property
+            <span className="material-symbols-outlined text-lg">add</span> Add New Hotel
           </button>
         </div>
       </nav>
 
-      {/* Main Content Area */}
+      {/* Main Canvas */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden bg-background min-w-0">
-        {/* TopAppBar */}
-        <header className="bg-surface-white w-full border-b border-outline-variant shadow-[0_2px_8px_rgba(0,53,128,0.04)] z-10 sticky top-0 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 shrink-0">
+        {/* Top Header */}
+        <header className="bg-surface-white w-full border-b border-outline-variant shadow-sm z-10 sticky top-0 flex justify-between items-center px-6 h-20 shrink-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-low transition-colors"
+              className="md:hidden text-primary p-2 -ml-2 rounded-full hover:bg-surface-container-low"
             >
               <span className="material-symbols-outlined">menu</span>
             </button>
-            <h2 className="text-headline-sm font-headline-sm font-semibold text-on-surface hidden md:block capitalize">
-              {activeTab === 'overview' ? 'Property Overview' : activeTab === 'hotels' ? 'My Hotels & Estates' : activeTab === 'bookings' ? 'Guest Bookings & Reservations' : activeTab === 'revenue' ? 'Revenue Analytics' : 'Staff Management'}
+            <h2 className="text-xl font-bold text-primary hidden md:block capitalize">
+              {activeTab === 'overview' ? 'Property Portfolio Overview' : activeTab === 'hotels' ? 'My Hotels & Estates' : activeTab === 'bookings' ? 'Guest Reservations' : activeTab === 'revenue' ? 'Revenue & Financial Payouts' : 'Staff & Team Management'}
             </h2>
-            <h1 className="text-headline-md font-headline-md font-bold text-primary md:hidden">StaySphere</h1>
+            <h1 className="text-lg font-bold text-primary md:hidden">Owner Portal</h1>
           </div>
 
           <div className="flex items-center gap-4">
@@ -150,7 +190,6 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
               <button
                 onClick={() => { setShowNotifications(!showNotifications); setNotificationCount(0); }}
                 className="p-2 text-on-surface-variant hover:text-primary transition-colors relative rounded-full hover:bg-surface-container-low"
-                title="Notifications"
               >
                 <span className="material-symbols-outlined">notifications</span>
                 {notificationCount > 0 && (
@@ -162,18 +201,18 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                 <div className="absolute right-0 mt-2 w-80 bg-surface-white rounded-2xl shadow-xl border border-outline-variant p-4 z-50 animate-fadeIn">
                   <div className="flex justify-between items-center mb-3 border-b border-outline-variant/40 pb-2">
                     <h4 className="font-bold text-xs text-primary uppercase tracking-wider">Notifications</h4>
-                    <span className="text-[11px] text-secondary font-semibold">Mark all read</span>
+                    <span className="text-[11px] text-secondary font-semibold cursor-pointer">Mark all read</span>
                   </div>
                   <div className="space-y-3 text-xs">
                     <div className="p-2.5 bg-surface-container-low rounded-xl flex gap-3">
                       <span className="material-symbols-outlined text-secondary text-lg shrink-0">event_available</span>
                       <div>
                         <p className="font-bold text-on-surface">New Reservation</p>
-                        <p className="text-on-surface-variant text-[11px]">The Grand Horizon Resort - 3 nights ($567)</p>
+                        <p className="text-on-surface-variant text-[11px]">The Grand Horizon Resort - 3 nights ($840)</p>
                       </div>
                     </div>
                     <div className="p-2.5 bg-surface-container-low rounded-xl flex gap-3">
-                      <span className="material-symbols-outlined text-success text-lg shrink-0">payments</span>
+                      <span className="material-symbols-outlined text-emerald-600 text-lg shrink-0">payments</span>
                       <div>
                         <p className="font-bold text-on-surface">Payout Processed</p>
                         <p className="text-on-surface-variant text-[11px]">$14,200 transferred to your bank account.</p>
@@ -183,194 +222,294 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                 </div>
               )}
             </div>
-
-            <div className="hidden md:flex items-center gap-2 border-l border-outline-variant pl-4 ml-2">
-              <span className="material-symbols-outlined text-on-surface-variant">language</span>
-              <span className="font-label-md text-label-md text-on-surface-variant">EN</span>
-            </div>
           </div>
         </header>
 
-        {/* Scrollable Canvas */}
-        <div className="flex-1 overflow-y-auto p-margin-mobile md:p-margin-desktop">
-          <div className="max-w-container-max mx-auto flex flex-col gap-8 pb-12">
-            {/* Page Header (Mobile) */}
-            <div className="md:hidden">
-              <h2 className="text-headline-xl-mobile font-headline-xl-mobile font-bold text-on-surface capitalize">{activeTab}</h2>
-              <p className="text-body-md font-body-md text-on-surface-variant mt-1">Manage your enterprise hotels and revenue.</p>
-            </div>
-
-            {/* Metrics Bento Grid */}
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Total Revenue Card */}
-              <div className="bg-surface-white rounded-xl p-6 border border-outline-variant/50 shadow-[0_4px_12px_rgba(0,53,128,0.03)] hover:shadow-[0_8px_24px_rgba(0,53,128,0.06)] transition-shadow flex flex-col justify-between group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-container/5 rounded-bl-[100px] -z-0 transition-transform group-hover:scale-110"></div>
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-primary-container/10 rounded-lg text-primary">
-                      <span className="material-symbols-outlined">payments</span>
+        {/* Scrollable Canvas Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-container-max mx-auto space-y-8 pb-12">
+            
+            {/* OVERVIEW TAB */}
+            {activeTab === 'overview' && (
+              <>
+                <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-surface-white rounded-2xl p-6 border border-outline-variant/50 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                        <span className="material-symbols-outlined">payments</span>
+                      </div>
+                      <span className="flex items-center text-emerald-600 font-bold text-xs gap-1 bg-emerald-50 px-2.5 py-1 rounded-full">
+                        <span className="material-symbols-outlined text-sm">trending_up</span> +14.2%
+                      </span>
                     </div>
-                    <span className="flex items-center text-success font-label-md text-label-md gap-1 bg-success/10 px-2 py-1 rounded-full">
-                      <span className="material-symbols-outlined text-[16px]">trending_up</span> 12.5%
-                    </span>
+                    <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total Revenue (MTD)</h3>
+                    <p className="text-2xl font-extrabold text-primary mt-1">$142,500</p>
                   </div>
-                  <h3 className="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Total Revenue (MTD)</h3>
-                  <p className="text-headline-lg font-headline-lg font-bold text-on-surface mt-1">$142,500</p>
-                </div>
-              </div>
 
-              {/* Current Occupancy Card */}
-              <div className="bg-surface-white rounded-xl p-6 border border-outline-variant/50 shadow-[0_4px_12px_rgba(0,53,128,0.03)] hover:shadow-[0_8px_24px_rgba(0,53,128,0.06)] transition-shadow flex flex-col justify-between group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-container/5 rounded-bl-[100px] -z-0 transition-transform group-hover:scale-110"></div>
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-primary-container/10 rounded-lg text-primary">
-                      <span className="material-symbols-outlined">bed</span>
+                  <div className="bg-surface-white rounded-2xl p-6 border border-outline-variant/50 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="p-2.5 bg-secondary/10 rounded-xl text-secondary">
+                        <span className="material-symbols-outlined">bed</span>
+                      </div>
+                      <span className="flex items-center text-on-surface-variant font-bold text-xs gap-1 bg-surface-container px-2.5 py-1 rounded-full">
+                        84% Capacity
+                      </span>
                     </div>
-                    <span className="flex items-center text-on-surface-variant font-label-md text-label-md gap-1 bg-surface-container-high px-2 py-1 rounded-full">
-                      <span className="material-symbols-outlined text-[16px]">trending_flat</span> 0%
-                    </span>
-                  </div>
-                  <h3 className="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">Current Occupancy</h3>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <p className="text-headline-lg font-headline-lg font-bold text-on-surface">84%</p>
-                    <p className="text-body-sm font-body-sm text-on-surface-variant">Across 3 properties</p>
-                  </div>
-                  <div className="w-full h-1.5 bg-surface-container-high rounded-full mt-4 overflow-hidden">
-                    <div className="h-full bg-secondary w-[84%] rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-
-              {/* New Bookings Card */}
-              <div className="bg-surface-white rounded-xl p-6 border border-outline-variant/50 shadow-[0_4px_12px_rgba(0,53,128,0.03)] hover:shadow-[0_8px_24px_rgba(0,53,128,0.06)] transition-shadow flex flex-col justify-between group relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-container/5 rounded-bl-[100px] -z-0 transition-transform group-hover:scale-110"></div>
-                <div className="relative z-10">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-primary-container/10 rounded-lg text-primary">
-                      <span className="material-symbols-outlined">event_available</span>
+                    <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Current Occupancy</h3>
+                    <p className="text-2xl font-extrabold text-primary mt-1">84%</p>
+                    <div className="w-full h-2 bg-surface-container-high rounded-full mt-3 overflow-hidden">
+                      <div className="h-full bg-secondary w-[84%] rounded-full"></div>
                     </div>
-                    <span className="flex items-center text-success font-label-md text-label-md gap-1 bg-success/10 px-2 py-1 rounded-full">
-                      <span className="material-symbols-outlined text-[16px]">trending_up</span> 8.2%
-                    </span>
-                  </div>
-                  <h3 className="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider">New Bookings (Today)</h3>
-                  <p className="text-headline-lg font-headline-lg font-bold text-on-surface mt-1">24</p>
-                </div>
-              </div>
-            </section>
-
-            {/* Complex Section: Charts & Properties Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column: Revenue Chart */}
-              <section className="lg:col-span-2 bg-surface-white rounded-xl border border-outline-variant/50 shadow-[0_4px_12px_rgba(0,53,128,0.03)] p-6 flex flex-col">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-headline-sm font-headline-sm font-semibold text-on-surface">Revenue Trends</h3>
-                  <select
-                    value={timeRange}
-                    onChange={(e) => setTimeRange(e.target.value)}
-                    className="bg-surface-container-low border-none rounded-lg text-label-md font-label-md text-on-surface py-2 pl-4 pr-8 focus:ring-2 focus:ring-secondary cursor-pointer outline-none"
-                  >
-                    <option>Last 6 Months</option>
-                    <option>This Year</option>
-                  </select>
-                </div>
-
-                {/* Bar Chart Area */}
-                <div className="flex-1 min-h-[250px] relative flex items-end gap-2 sm:gap-6 pt-10">
-                  {/* Y-Axis labels */}
-                  <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-label-sm font-label-sm text-on-surface-variant pr-4 border-r border-outline-variant/30 pb-8">
-                    <span>$200k</span>
-                    <span>$150k</span>
-                    <span>$100k</span>
-                    <span>$50k</span>
-                    <span>$0</span>
                   </div>
 
-                  {/* Chart Bars container */}
-                  <div className="flex-1 h-full ml-14 flex items-end justify-between gap-2 pb-8 relative border-b border-outline-variant/30">
-                    {/* Grid Lines */}
-                    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8">
-                      <div className="w-full h-px bg-outline-variant/20"></div>
-                      <div className="w-full h-px bg-outline-variant/20"></div>
-                      <div className="w-full h-px bg-outline-variant/20"></div>
-                      <div className="w-full h-px bg-outline-variant/20"></div>
-                      <div className="w-full h-px bg-transparent"></div>
+                  <div className="bg-surface-white rounded-2xl p-6 border border-outline-variant/50 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-600">
+                        <span className="material-symbols-outlined">event_available</span>
+                      </div>
+                      <span className="flex items-center text-emerald-600 font-bold text-xs gap-1 bg-emerald-50 px-2.5 py-1 rounded-full">
+                        <span className="material-symbols-outlined text-sm">trending_up</span> +8.2%
+                      </span>
+                    </div>
+                    <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Active Bookings</h3>
+                    <p className="text-2xl font-extrabold text-primary mt-1">24 Reservations</p>
+                  </div>
+                </section>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <section className="lg:col-span-2 bg-surface-white rounded-2xl border border-outline-variant/50 shadow-sm p-6 flex flex-col">
+                    <div className="flex justify-between items-center mb-6">
+                      <h3 className="text-base font-bold text-primary">Monthly Revenue Performance</h3>
+                      <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="bg-surface-container-low border border-outline-variant rounded-xl text-xs font-bold px-3 py-1.5">
+                        <option>Last 6 Months</option>
+                        <option>This Year</option>
+                      </select>
                     </div>
 
-                    {chartData.map((bar, idx) => (
-                      <div key={idx} className="relative w-full max-w-[48px] h-full flex flex-col justify-end group cursor-pointer z-10">
-                        <div
-                          style={{ height: bar.height }}
-                          className={`w-full rounded-t-sm transition-all duration-300 relative ${
-                            bar.current
-                              ? 'bg-secondary hover:bg-primary-container'
-                              : 'bg-secondary-container/40 hover:bg-secondary-container/80'
-                          }`}
-                        >
-                          {/* Tooltip */}
-                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-inverse-surface text-on-primary text-label-sm px-2.5 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-lg z-30 font-bold">
-                            {bar.label}
+                    <div className="flex-1 min-h-[220px] relative flex items-end gap-4 pt-10">
+                      <div className="flex-1 h-full flex items-end justify-between gap-3 pb-8 border-b border-outline-variant/30">
+                        {chartData.map((bar, idx) => (
+                          <div key={idx} className="relative w-full max-w-[48px] h-full flex flex-col justify-end group cursor-pointer">
+                            <div style={{ height: bar.height }} className={`w-full rounded-t-lg transition-all ${bar.current ? 'bg-secondary' : 'bg-secondary/30 hover:bg-secondary/60'}`}>
+                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow">
+                                {bar.label}
+                              </div>
+                            </div>
+                            <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-bold text-on-surface-variant">{bar.month}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="bg-surface-white rounded-2xl border border-outline-variant/50 shadow-sm p-6 flex flex-col">
+                    <h3 className="text-base font-bold text-primary mb-4">Active Hotels</h3>
+                    <div className="space-y-4">
+                      {hotelsList.map(prop => (
+                        <div key={prop.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-surface-container-low transition-colors">
+                          <img src={prop.image} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-xs font-bold text-primary truncate">{prop.title}</h4>
+                            <p className="text-[11px] text-on-surface-variant">{prop.location}</p>
+                            <span className="text-[10px] font-extrabold text-emerald-600">{prop.occupancy} Occupancy</span>
                           </div>
                         </div>
-                        <span className={`absolute -bottom-6 left-1/2 -translate-x-1/2 text-label-sm font-label-sm ${
-                          bar.current ? 'text-on-surface font-bold' : 'text-on-surface-variant'
-                        }`}>
-                          {bar.month}
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              </>
+            )}
+
+            {/* MY HOTELS TAB */}
+            {activeTab === 'hotels' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-bold text-primary">Your Listed Hotels & Villas</h3>
+                    <p className="text-xs text-on-surface-variant">Manage your property details, room pricing, and amenities.</p>
+                  </div>
+                  <button onClick={onAddProperty} className="bg-secondary text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow hover:bg-secondary-container">
+                    <span className="material-symbols-outlined text-base">add</span> Add New Hotel
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {hotelsList.map(hotel => (
+                    <div key={hotel.id} className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                      <div className="h-44 relative bg-surface-container">
+                        <img src={hotel.image} alt={hotel.title} className="w-full h-full object-cover" />
+                        <span className="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                          {hotel.status}
                         </span>
+                      </div>
+                      <div className="p-5">
+                        <h4 className="text-base font-bold text-primary mb-1">{hotel.title}</h4>
+                        <p className="text-xs text-on-surface-variant mb-4 flex items-center gap-1">
+                          <span className="material-symbols-outlined text-sm text-secondary">location_on</span>
+                          {hotel.location}
+                        </p>
+                        <div className="flex justify-between items-center pt-3 border-t border-outline-variant/50 text-xs">
+                          <span className="font-bold text-primary">{hotel.price}</span>
+                          <span className="text-on-surface-variant font-medium">{hotel.rooms}</span>
+                        </div>
+                        <button onClick={onAddProperty} className="w-full mt-4 py-2 rounded-xl border border-secondary text-secondary hover:bg-secondary/10 text-xs font-bold transition-colors">
+                          Edit Property Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* BOOKINGS TAB */}
+            {activeTab === 'bookings' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-bold text-primary">Guest Reservations</h3>
+                  <p className="text-xs text-on-surface-variant">Review incoming reservations, check-in guests, or update booking status.</p>
+                </div>
+
+                <div className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-surface-container-low text-on-surface-variant text-[11px] font-bold uppercase tracking-wider border-b border-outline-variant">
+                          <th className="p-4">Booking ID</th>
+                          <th className="p-4">Guest Name</th>
+                          <th className="p-4">Property</th>
+                          <th className="p-4">Check-In / Out</th>
+                          <th className="p-4">Amount</th>
+                          <th className="p-4">Status</th>
+                          <th className="p-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-outline-variant/40 text-xs font-medium">
+                        {bookingsList.map(b => (
+                          <tr key={b.id} className="hover:bg-surface-container-low/50">
+                            <td className="p-4 font-bold text-primary">{b.id}</td>
+                            <td className="p-4 font-bold text-on-surface">{b.guest}</td>
+                            <td className="p-4 text-on-surface-variant">{b.property}</td>
+                            <td className="p-4 text-on-surface-variant">{b.checkIn} - {b.checkOut}</td>
+                            <td className="p-4 font-extrabold text-primary">{b.amount}</td>
+                            <td className="p-4">
+                              <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase ${
+                                b.status === "Confirmed" ? "bg-emerald-100 text-emerald-800" :
+                                b.status === "Checked-In" ? "bg-blue-100 text-blue-800" :
+                                b.status === "Pending" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
+                              }`}>
+                                {b.status}
+                              </span>
+                            </td>
+                            <td className="p-4 text-right space-x-2">
+                              {b.status === "Pending" && (
+                                <button onClick={() => handleUpdateBookingStatus(b.id, "Confirmed")} className="text-xs font-bold text-emerald-600 hover:underline">Confirm</button>
+                              )}
+                              {b.status === "Confirmed" && (
+                                <button onClick={() => handleUpdateBookingStatus(b.id, "Checked-In")} className="text-xs font-bold text-blue-600 hover:underline">Check-In</button>
+                              )}
+                              {b.status !== "Cancelled" && (
+                                <button onClick={() => handleUpdateBookingStatus(b.id, "Cancelled")} className="text-xs font-bold text-rose-600 hover:underline">Cancel</button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* REVENUE TAB */}
+            {activeTab === 'revenue' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-bold text-primary">Financial Analytics & Payouts</h3>
+                  <p className="text-xs text-on-surface-variant">Track your monthly earnings and direct bank payouts.</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase">Net Revenue (All Time)</span>
+                    <p className="text-3xl font-extrabold text-primary mt-2">$674,800</p>
+                    <span className="text-[11px] text-emerald-600 font-bold block mt-1">✓ 92% Payout Completed</span>
+                  </div>
+                  <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase">Next Payout (Oct 15)</span>
+                    <p className="text-3xl font-extrabold text-secondary mt-2">$18,450</p>
+                    <span className="text-[11px] text-on-surface-variant font-medium block mt-1">Commercial Bank of Ceylon (***4921)</span>
+                  </div>
+                  <div className="bg-surface-white p-6 rounded-2xl border border-outline-variant shadow-sm">
+                    <span className="text-xs font-bold text-on-surface-variant uppercase">StaySphere Platform Fee</span>
+                    <p className="text-3xl font-extrabold text-primary mt-2">8.0%</p>
+                    <span className="text-[11px] text-on-surface-variant font-medium block mt-1">Standard Partner Tier</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* STAFF MANAGEMENT TAB */}
+            {activeTab === 'staff' && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-lg font-bold text-primary">Hotel Staff & Team Members</h3>
+                    <p className="text-xs text-on-surface-variant">Manage staff access and assign hotel roles.</p>
+                  </div>
+                  <button onClick={() => setShowAddStaffModal(true)} className="bg-primary text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow">
+                    <span className="material-symbols-outlined text-base">person_add</span> Add Team Member
+                  </button>
+                </div>
+
+                {showAddStaffModal && (
+                  <form onSubmit={handleAddStaff} className="bg-surface-white p-6 rounded-2xl border border-secondary/30 shadow-md space-y-4 max-w-lg">
+                    <h4 className="font-bold text-primary text-base">Add New Staff Member</h4>
+                    <div>
+                      <label className="text-xs font-bold text-on-surface block mb-1">Full Name</label>
+                      <input type="text" required value={newStaffName} onChange={(e) => setNewStaffName(e.target.value)} placeholder="e.g. Kasun Fernando" className="w-full border border-outline-variant rounded-xl p-2.5 text-xs font-semibold" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-on-surface block mb-1">Assigned Role</label>
+                      <select value={newStaffRole} onChange={(e) => setNewStaffRole(e.target.value)} className="w-full border border-outline-variant rounded-xl p-2.5 text-xs font-semibold">
+                        <option>General Manager</option>
+                        <option>Front Desk Agent</option>
+                        <option>Head Housekeeper</option>
+                        <option>Executive Chef</option>
+                      </select>
+                    </div>
+                    <div className="flex justify-end gap-2 pt-2">
+                      <button type="button" onClick={() => setShowAddStaffModal(false)} className="px-4 py-2 rounded-xl text-xs font-bold border border-gray-300">Cancel</button>
+                      <button type="submit" className="px-4 py-2 rounded-xl text-xs font-bold bg-primary text-white">Save Staff</button>
+                    </div>
+                  </form>
+                )}
+
+                <div className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm">
+                  <div className="divide-y divide-outline-variant/40">
+                    {staffList.map(member => (
+                      <div key={member.id} className="p-4 flex items-center justify-between hover:bg-surface-container-low/50">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-sm">
+                            {member.name.charAt(0)}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-xs text-primary">{member.name}</h4>
+                            <p className="text-[11px] text-on-surface-variant font-medium">{member.role} • {member.hotel}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-on-surface-variant font-semibold">{member.phone}</span>
+                          <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full">Active</span>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
-              </section>
+              </div>
+            )}
 
-              {/* Right Column: Active Properties List */}
-              <section className="bg-surface-white rounded-xl border border-outline-variant/50 shadow-[0_4px_12px_rgba(0,53,128,0.03)] p-6 flex flex-col h-[400px]">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-headline-sm font-headline-sm font-semibold text-on-surface">Active Properties</h3>
-                  <button className="text-secondary hover:text-primary transition-colors text-label-sm font-label-sm font-semibold uppercase tracking-wide cursor-pointer">
-                    View All
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3">
-                  {activeProperties.map((prop, idx) => (
-                    <React.Fragment key={prop.id}>
-                      <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer border border-transparent hover:border-outline-variant/30">
-                        <div className="w-16 h-16 rounded-md overflow-hidden shrink-0 bg-surface-container">
-                          <img
-                            src={prop.image}
-                            alt={prop.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="text-label-md font-label-md text-on-surface truncate font-bold">{prop.title}</h4>
-                          <p className="text-label-sm font-label-sm text-on-surface-variant truncate">{prop.location}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className={`inline-block w-2 h-2 rounded-full ${prop.occColor}`}></span>
-                            <span className="text-label-sm font-label-sm text-on-surface-variant font-medium">{prop.occupancy} Occ.</span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); onAddProperty && onAddProperty(); }}
-                          className="p-2 text-outline hover:text-secondary bg-surface-white rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-sm border border-outline-variant/50 cursor-pointer"
-                          title="Edit Property"
-                        >
-                          <span className="material-symbols-outlined text-[20px]">edit</span>
-                        </button>
-                      </div>
-                      {idx < activeProperties.length - 1 && <div className="w-full h-px bg-outline-variant/30"></div>}
-                    </React.Fragment>
-                  ))}
-                </div>
-                <button
-                  onClick={() => onAddProperty && onAddProperty()}
-                  className="w-full mt-4 py-2 border-2 border-secondary text-secondary font-label-md text-label-md rounded-lg hover:bg-secondary/5 transition-colors flex items-center justify-center gap-2 font-bold cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[20px]">add</span> Add Property
-                </button>
-              </section>
-            </div>
           </div>
         </div>
       </main>
