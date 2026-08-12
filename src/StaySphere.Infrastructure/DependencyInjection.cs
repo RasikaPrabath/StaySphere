@@ -46,6 +46,7 @@ namespace StaySphere.Infrastructure
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<ICouponService, CouponService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IDashboardService, DashboardService>();
 
             // Configure JWT Authentication
             var secretKey = configuration["JWT_SECRET"] ?? "StaySphere_Super_Secret_Enterprise_JWT_Key_2026_Must_Be_At_Least_32_Chars!";
