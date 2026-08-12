@@ -41,6 +41,7 @@ namespace StaySphere.Infrastructure
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<ISearchService, SearchService>();
             services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IPaymentService, PaymentService>();
 
             // Configure JWT Authentication
             var secretKey = configuration["JWT_SECRET"] ?? "StaySphere_Super_Secret_Enterprise_JWT_Key_2026_Must_Be_At_Least_32_Chars!";
