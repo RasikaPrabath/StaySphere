@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import FeaturedCollections from './components/FeaturedCollections';
@@ -18,6 +18,7 @@ import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
 import AuthModal from './components/AuthModal';
 import Toast from './components/Toast';
+import { authApi } from './data/api';
 import { CURRENCIES, PROPERTIES } from './data/mockData';
 
 export default function App() {
@@ -49,6 +50,56 @@ export default function App() {
   const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
   const [wishlist, setWishlist] = useState(["prop-colombo-1", "prop-grand-horizon"]);
   const [toasts, setToasts] = useState([]);
+
+  // Load persistent user session
+  useEffect(() => {
+    async function loadCurrentUser() {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        try {
+          const userObj = await authApi.getCurrentUser();
+          setUser(userObj);
+        } catch (err) {
+          console.error("Failed to load user session", err);
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+        }
+      }
+    }
+    loadCurrentUser();
+
+    // Listen to session expiration events
+    const handleExpired = () => {
+      setUser(null);
+      setCurrentView("home");
+      addToast("Session expired. Please log in again.");
+    };
+    window.addEventListener('auth_session_expired', handleExpired);
+    return () => window.removeEventListener('auth_session_expired', handleExpired);
+  }, []);
+
+  // Protect Owner Portal & Super Admin Panel based on role
+  const userRole = user?.role || user?.Role;
+  const isOwner = userRole === 'HotelOwner' || userRole === 3 || userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
+  const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
+
+  useEffect(() => {
+    if (currentView === "admin-panel" && !isAdmin) {
+      setCurrentView("home");
+    } else if (currentView === "owner-dashboard" && !isOwner) {
+      setCurrentView("home");
+    } else if (currentView === "checkout" && !user) {
+      setCurrentView("home");
+      addToast("Please sign in to checkout.");
+    }
+  }, [currentView, user, isAdmin, isOwner]);
+
+  const handleLogout = () => {
+    authApi.logout();
+    setUser(null);
+    setCurrentView("home");
+    addToast("Logged out successfully");
+  };
 
   // Toast notification helper
   const addToast = (message) => {
@@ -103,6 +154,8 @@ export default function App() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         onSearchSubmit={() => handleSearchSubmit()}
+        user={user}
+        onLogout={handleLogout}
       />
 
       {/* Main View Router */}
@@ -240,9 +293,10 @@ export default function App() {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
-        onLoginSuccess={(userName) => {
-          setUser(userName);
-          addToast(`Welcome back, ${userName}!`);
+        onLoginSuccess={(userObj) => {
+          setUser(userObj);
+          const name = userObj?.firstName || userObj?.FirstName || 'Guest';
+          addToast(`Welcome back, ${name}!`);
         }}
       />
 

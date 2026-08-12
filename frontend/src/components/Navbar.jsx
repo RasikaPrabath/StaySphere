@@ -11,15 +11,19 @@ export default function Navbar({
   setSelectedCurrency,
   searchQuery,
   setSearchQuery,
-  onSearchSubmit
+  onSearchSubmit,
+  user,
+  onLogout
 }) {
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [selectedLang, setSelectedLang] = useState(LANGUAGES[0]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const langRef = useRef(null);
   const currRef = useRef(null);
+  const profileRef = useRef(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -29,6 +33,9 @@ export default function Navbar({
       }
       if (currRef.current && !currRef.current.contains(event.target)) {
         setShowCurrencyDropdown(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileDropdown(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -49,6 +56,17 @@ export default function Navbar({
     { id: 'owner-dashboard', label: 'Owner Portal', icon: 'space_dashboard' },
     { id: 'admin-panel', label: 'Super Admin', icon: 'verified_user' },
   ];
+
+  const userRole = user?.role || user?.Role;
+  const isOwner = userRole === 'HotelOwner' || userRole === 3 || userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
+  const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
+
+  const filteredLinks = navLinks.filter((link) => {
+    if (link.id === 'owner-dashboard') return isOwner;
+    if (link.id === 'admin-panel') return isAdmin;
+    if (link.id === 'checkout') return !!user;
+    return true;
+  });
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs transition-all">
@@ -91,7 +109,7 @@ export default function Navbar({
 
         {/* Center / Right Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1.5">
-          {navLinks.map((link) => {
+          {filteredLinks.map((link) => {
             const isActive = currentView === link.id;
             return (
               <button
@@ -191,14 +209,104 @@ export default function Navbar({
             )}
           </button>
 
-          {/* Auth Login Button */}
-          <button
-            onClick={onOpenAuth}
-            className="ml-2 font-bold text-xs bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5"
-          >
-            <span className="material-symbols-outlined text-base">account_circle</span>
-            Sign In
-          </button>
+          {/* Auth/Profile */}
+          {!user ? (
+            <button
+              onClick={onOpenAuth}
+              className="ml-2 font-bold text-xs bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5"
+            >
+              <span className="material-symbols-outlined text-base">account_circle</span>
+              Sign In
+            </button>
+          ) : (
+            <div className="relative ml-2" ref={profileRef}>
+              <button
+                onClick={() => {
+                  setShowProfileDropdown(!showProfileDropdown);
+                  setShowLangDropdown(false);
+                  setShowCurrencyDropdown(false);
+                }}
+                className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl transition-all cursor-pointer focus:outline-none"
+              >
+                {/* User Avatar Circle */}
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-secondary to-primary text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                  {((user.firstName || user.FirstName || 'U')[0] + (user.lastName || user.LastName || '')[0] || 'U').toUpperCase()}
+                </div>
+                <span className="material-symbols-outlined text-gray-400 text-sm">expand_more</span>
+              </button>
+
+              {showProfileDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3.5 z-50 animate-fadeIn">
+                  {/* Profile Header */}
+                  <div className="px-4 pb-3 border-b border-gray-100 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-base">
+                      {((user.firstName || user.FirstName || 'U')[0]).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-bold text-xs text-gray-800 truncate">
+                        {user.firstName || user.FirstName || ''} {user.lastName || user.LastName || ''}
+                      </span>
+                      <span className="text-[10px] text-gray-400 truncate font-semibold">{user.email || user.Email}</span>
+                    </div>
+                  </div>
+
+                  {/* Role Badge Section */}
+                  <div className="px-4 py-2 flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Account Role</span>
+                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      isAdmin 
+                        ? 'bg-error/10 text-error' 
+                        : isOwner 
+                          ? 'bg-tertiary-fixed-dim/20 text-secondary' 
+                          : 'bg-primary/10 text-primary'
+                    }`}>
+                      {isAdmin ? 'Super Admin' : isOwner ? 'Hotel Owner' : 'Customer'}
+                    </span>
+                  </div>
+
+                  <div className="w-full h-px bg-gray-100 my-1"></div>
+
+                  {/* Profile Dropdown Actions */}
+                  {isOwner && (
+                    <button
+                      onClick={() => {
+                        setCurrentView('owner-dashboard');
+                        setShowProfileDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-base text-gray-400">space_dashboard</span>
+                      <span>Owner Portal</span>
+                    </button>
+                  )}
+
+                  {isAdmin && (
+                    <button
+                      onClick={() => {
+                        setCurrentView('admin-panel');
+                        setShowProfileDropdown(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-base text-gray-400">verified_user</span>
+                      <span>Admin Panel</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      onLogout();
+                      setShowProfileDropdown(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs font-bold text-error hover:bg-error/5 transition-colors flex items-center gap-2.5 cursor-pointer mt-1"
+                  >
+                    <span className="material-symbols-outlined text-base text-error">logout</span>
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Mobile Hamburger Menu */}
@@ -241,7 +349,7 @@ export default function Navbar({
             </button>
           </div>
 
-          {navLinks.map((link) => {
+          {filteredLinks.map((link) => {
             const isActive = currentView === link.id;
             return (
               <button
@@ -272,13 +380,51 @@ export default function Navbar({
               <span className="bg-error text-white text-xs px-2 py-0.5 rounded-full font-bold">{wishlistCount}</span>
             </button>
 
-            <button
-              onClick={() => { onOpenAuth(); setMobileMenuOpen(false); }}
-              className="w-full bg-primary hover:bg-secondary text-white py-3 rounded-xl font-bold shadow-md text-sm cursor-pointer flex items-center justify-center gap-2"
-            >
-              <span className="material-symbols-outlined text-lg">login</span>
-              Sign In / Register
-            </button>
+            {!user ? (
+              <button
+                onClick={() => { onOpenAuth(); setMobileMenuOpen(false); }}
+                className="w-full bg-primary hover:bg-secondary text-white py-3 rounded-xl font-bold shadow-md text-sm cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">login</span>
+                Sign In / Register
+              </button>
+            ) : (
+              <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3 text-left">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-secondary to-primary text-white flex items-center justify-center font-bold text-sm">
+                    {((user.firstName || user.FirstName || 'U')[0]).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-bold text-xs text-gray-800 truncate">
+                      {user.firstName || user.FirstName || ''} {user.lastName || user.LastName || ''}
+                    </span>
+                    <span className="text-[10px] text-gray-400 truncate font-semibold">{user.email || user.Email}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between border-t border-gray-100/50 pt-2.5">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Account Role</span>
+                  <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                    isAdmin 
+                      ? 'bg-error/10 text-error' 
+                      : isOwner 
+                        ? 'bg-tertiary-fixed-dim/20 text-secondary' 
+                        : 'bg-primary/10 text-primary'
+                  }`}>
+                    {isAdmin ? 'Super Admin' : isOwner ? 'Hotel Owner' : 'Customer'}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    onLogout();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full mt-1.5 border border-error/20 text-error hover:bg-error/5 py-2.5 rounded-xl font-bold text-xs cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <span className="material-symbols-outlined text-base">logout</span>
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

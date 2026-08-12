@@ -67,12 +67,16 @@ namespace StaySphere.API.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
             var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            var firstName = User.FindFirst("FirstName")?.Value;
+            var lastName = User.FindFirst("LastName")?.Value;
 
             return Ok(new
             {
                 UserId = userId,
                 Email = email,
-                Role = role
+                Role = role,
+                FirstName = firstName,
+                LastName = lastName
             });
         }
     }
