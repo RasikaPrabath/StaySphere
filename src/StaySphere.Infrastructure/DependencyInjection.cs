@@ -8,6 +8,7 @@ using StaySphere.Application.Common.Interfaces;
 using StaySphere.Infrastructure.Caching;
 using StaySphere.Infrastructure.Identity;
 using StaySphere.Infrastructure.Persistence;
+using StaySphere.Infrastructure.Services;
 
 namespace StaySphere.Infrastructure
 {
@@ -35,6 +36,8 @@ namespace StaySphere.Infrastructure
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IImageUploadService, LocalImageUploadService>();
+            services.AddScoped<IHotelService, HotelService>();
 
             // Configure JWT Authentication
             var secretKey = configuration["JWT_SECRET"] ?? "StaySphere_Super_Secret_Enterprise_JWT_Key_2026_Must_Be_At_Least_32_Chars!";
