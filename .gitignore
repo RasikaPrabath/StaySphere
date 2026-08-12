@@ -1,0 +1,39 @@
+# StaySphere Git Ignore Configuration
+
+# Build & Binaries (.NET)
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+.idea/
+.vscode/
+
+# Node & Frontend
+node_modules/
+dist/
+build/
+.next/
+.out/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.pfx
+
+# OS Specific
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log
