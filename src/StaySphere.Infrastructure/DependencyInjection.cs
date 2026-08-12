@@ -1,8 +1,12 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using StaySphere.Application.Common.Interfaces;
 using StaySphere.Infrastructure.Caching;
+using StaySphere.Infrastructure.Identity;
 using StaySphere.Infrastructure.Persistence;
 
 namespace StaySphere.Infrastructure
@@ -11,7 +15,7 @@ namespace StaySphere.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // PostgreSQL Entity Framework Core DbContext
+            // PostgreSQL DbContext
             var connectionString = configuration.GetConnectionString("DefaultConnection") 
                 ?? configuration["DATABASE_URL"] 
                 ?? "Host=localhost;Port=5432;Database=staysphere_db;Username=postgres;Password=postgres_secure_pass_2026";
@@ -28,6 +32,30 @@ namespace StaySphere.Infrastructure
             });
 
             services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+            services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+            services.AddScoped<IAuthService, AuthService>();
+
+            // Configure JWT Authentication
+            var secretKey = configuration["JWT_SECRET"] ?? "StaySphere_Super_Secret_Enterprise_JWT_Key_2026_Must_Be_At_Least_32_Chars!";
+            var key = Encoding.UTF8.GetBytes(secretKey);
+
+            services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = configuration["JWT_ISSUER"] ?? "StaySphereAPI",
+                        ValidAudience = configuration["JWT_AUDIENCE"] ?? "StaySphereClients",
+                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                    };
+                });
 
             return services;
         }
