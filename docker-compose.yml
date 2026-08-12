@@ -35,7 +35,7 @@ services:
 
   staysphere-api:
     build:
-      context: .
+      context: ./backend
       dockerfile: src/StaySphere.API/Dockerfile
     container_name: staysphere-api
     restart: always
