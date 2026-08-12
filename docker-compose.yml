@@ -33,6 +33,25 @@ services:
       timeout: 5s
       retries: 5
 
+  staysphere-api:
+    build:
+      context: .
+      dockerfile: src/StaySphere.API/Dockerfile
+    container_name: staysphere-api
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DATABASE_URL=Host=staysphere-db;Port=5432;Database=staysphere_db;Username=postgres;Password=postgres_secure_pass_2026
+      - REDIS_URL=staysphere-redis:6379
+      - JWT_SECRET=StaySphere_Super_Secret_Enterprise_JWT_Key_2026_Must_Be_At_Least_32_Chars!
+    depends_on:
+      staysphere-db:
+        condition: service_healthy
+      staysphere-redis:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:
