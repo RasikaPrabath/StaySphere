@@ -15,15 +15,12 @@ export default function Navbar({
   user,
   onLogout
 }) {
-  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [showLangDropdown, setShowLangDropdown] = useState(false);
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showMenuDropdown, setShowMenuDropdown] = useState(false);
   const [selectedLang, setSelectedLang] = useState(LANGUAGES[0]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const langRef = useRef(null);
-  const currRef = useRef(null);
-  const profileRef = useRef(null);
+  const menuRef = useRef(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -31,11 +28,8 @@ export default function Navbar({
       if (langRef.current && !langRef.current.contains(event.target)) {
         setShowLangDropdown(false);
       }
-      if (currRef.current && !currRef.current.contains(event.target)) {
-        setShowCurrencyDropdown(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setShowProfileDropdown(false);
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenuDropdown(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -48,198 +42,186 @@ export default function Navbar({
     }
   };
 
-  const navLinks = [
-    { id: 'home', label: 'Home', icon: 'home' },
-    { id: 'search', label: 'Search Stays', icon: 'search' },
-    { id: 'detail', label: 'Property View', icon: 'domain' },
-    { id: 'checkout', label: 'Checkout', icon: 'shopping_bag' },
-    { id: 'owner-dashboard', label: 'Owner Portal', icon: 'space_dashboard' },
-    { id: 'admin-panel', label: 'Super Admin', icon: 'verified_user' },
-  ];
-
   const userRole = user?.role || user?.Role;
   const isOwner = userRole === 'HotelOwner' || userRole === 3 || userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
   const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
 
-  const filteredLinks = navLinks.filter((link) => {
-    if (link.id === 'owner-dashboard') return isOwner;
-    if (link.id === 'admin-panel') return isAdmin;
-    if (link.id === 'checkout') return !!user;
-    return true;
-  });
-
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-xs transition-all">
+    <header className="sticky top-0 z-50 w-full bg-white shadow-xs transition-all">
       <div className="max-w-container-max mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
-        
-        {/* Brand Logo & Search */}
+
+        {/* Brand Logo (Trivago-like colorful styling) */}
         <div className="flex items-center gap-6">
           <button
             onClick={() => setCurrentView("home")}
-            className="flex items-center gap-2.5 group cursor-pointer focus:outline-none"
+            className="flex items-center gap-1 group cursor-pointer focus:outline-none"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary text-white flex items-center justify-center font-black text-xl shadow-md group-hover:scale-105 transition-transform">
-              S
-            </div>
-            <div className="flex flex-col text-left">
-              <span className="font-extrabold text-2xl tracking-tight text-primary leading-none">StaySphere</span>
-              <span className="text-[10px] font-bold text-secondary tracking-widest uppercase mt-0.5">Luxury Living</span>
-            </div>
+            <span className="font-black text-2xl md:text-3xl tracking-tighter leading-none font-inter select-none">
+              <span className="text-[#FF385C]">s</span>
+              <span className="text-[#0058bc]">t</span>
+              <span className="text-[#FABB05]">a</span>
+              <span className="text-[#FF385C]">y</span>
+              <span className="text-[#0058bc]">s</span>
+              <span className="text-[#FABB05]">p</span>
+              <span className="text-[#FF385C]">h</span>
+              <span className="text-[#0058bc]">e</span>
+              <span className="text-[#FABB05]">r</span>
+              <span className="text-[#0058bc]">e</span>
+            </span>
           </button>
 
-          {/* Quick Header Search Bar */}
-          <div className="hidden lg:flex items-center bg-gray-50 border border-gray-200 rounded-full pl-4 pr-1.5 py-1.5 focus-within:border-secondary focus-within:bg-white focus-within:ring-2 focus-within:ring-secondary/10 transition-all shadow-inner w-72">
-            <span className="material-symbols-outlined text-gray-400 text-xl mr-2">search</span>
-            <input
-              type="text"
-              placeholder="Search destination..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className="bg-transparent border-none outline-none text-xs font-semibold text-gray-800 w-full placeholder-gray-400"
-            />
+          {/* Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1.5 ml-4">
             <button
-              onClick={() => onSearchSubmit && onSearchSubmit()}
-              className="text-[11px] font-bold bg-primary hover:bg-secondary text-white px-3.5 py-1.5 rounded-full transition-all cursor-pointer shrink-0 shadow-sm"
+              onClick={() => setCurrentView("search")}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${currentView === 'search' ? 'text-[#0058bc] bg-[#0058bc]/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
             >
-              Go
+              Stays & Resorts
             </button>
-          </div>
+            <button
+              onClick={() => {
+                setCurrentView("home");
+                setTimeout(() => document.getElementById('destinations')?.scrollIntoView({ behavior: 'smooth' }), 100);
+              }}
+              className="px-3 py-1.5 text-xs font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+            >
+              Destinations
+            </button>
+            <button
+              onClick={() => {
+                if (isOwner) setCurrentView("owner-dashboard");
+                else onOpenAuth();
+              }}
+              className="px-3 py-1.5 text-xs font-bold text-purple-700 hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+            >
+              List Your Property
+            </button>
+          </nav>
+
+          {/* Quick Header Search Bar - Only show when NOT on home view */}
+          {currentView !== 'home' && (
+            <div className="hidden lg:flex items-center bg-gray-50 border border-gray-200 rounded-full pl-4 pr-1.5 py-1.5 focus-within:border-secondary focus-within:bg-white focus-within:ring-2 focus-within:ring-secondary/10 transition-all shadow-inner w-64">
+              <span className="material-symbols-outlined text-gray-400 text-xl mr-2">search</span>
+              <input
+                type="text"
+                placeholder="Search destination..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                className="bg-transparent border-none outline-none text-xs font-semibold text-gray-800 w-full placeholder-gray-400"
+              />
+              <button
+                onClick={() => onSearchSubmit && onSearchSubmit()}
+                className="text-[11px] font-bold bg-[#0058bc] hover:bg-[#003580] text-[#FFFFFF] px-3 py-1 rounded-full transition-all cursor-pointer shrink-0 shadow-sm"
+              >
+                Go
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Center / Right Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1.5">
-          {filteredLinks.map((link) => {
-            const isActive = currentView === link.id;
-            return (
-              <button
-                key={link.id}
-                onClick={() => setCurrentView(link.id)}
-                className={`relative px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  isActive
-                    ? 'text-secondary bg-secondary/10 font-extrabold'
-                    : 'text-gray-600 hover:text-primary hover:bg-gray-100/80'
-                }`}
-              >
-                <span className={`material-symbols-outlined text-base ${isActive ? 'text-secondary' : 'text-gray-400'}`}>
-                  {link.icon}
-                </span>
-                <span>{link.label}</span>
-                {isActive && (
-                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-secondary rounded-full"></span>
-                )}
-              </button>
-            );
-          })}
-        </nav>
+        {/* Right Utilities (Trivago Style: Language/Currency, Sign In, Menu Button) */}
+        <div className="flex items-center gap-2 md:gap-4">
 
-        {/* User Utilities (Lang, Currency, Wishlist, Login) */}
-        <div className="hidden md:flex items-center gap-2 border-l border-gray-200 pl-4">
-          {/* Language Dropdown */}
+          {/* Language & Currency Merged Selector */}
           <div className="relative" ref={langRef}>
             <button
-              onClick={() => { setShowLangDropdown(!showLangDropdown); setShowCurrencyDropdown(false); }}
-              className="p-2 text-gray-600 hover:text-primary rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-1 cursor-pointer"
-              title="Change Language"
+              onClick={() => {
+                setShowLangDropdown(!showLangDropdown);
+                setShowMenuDropdown(false);
+              }}
+              className="px-2 py-1.5 text-gray-700 hover:text-black rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1 cursor-pointer font-bold text-xs uppercase"
+              title="Change Language & Currency"
             >
               <span className="material-symbols-outlined text-lg">language</span>
-              <span className="text-xs font-bold uppercase">{selectedLang.code}</span>
+              <span>{selectedLang.code} · {selectedCurrency.symbol || selectedCurrency.code}</span>
             </button>
 
             {showLangDropdown && (
-              <div className="absolute right-0 mt-2 w-44 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn">
-                <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Select Language</div>
-                {LANGUAGES.map((lang) => (
-                  <button
-                    key={lang.code}
-                    onClick={() => { setSelectedLang(lang); setShowLangDropdown(false); }}
-                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer ${
-                      selectedLang.code === lang.code ? 'text-secondary font-bold bg-secondary/5' : 'text-gray-700'
-                    }`}
-                  >
-                    <span>{lang.name}</span>
-                    {selectedLang.code === lang.code && <span className="material-symbols-outlined text-sm text-secondary">check</span>}
-                  </button>
-                ))}
+              <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-50 animate-fadeIn grid grid-cols-2 gap-4">
+                <div>
+                  <div className="px-1 pb-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Language</div>
+                  {LANGUAGES.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setSelectedLang(lang);
+                        setShowLangDropdown(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 text-xs font-semibold hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-between cursor-pointer ${selectedLang.code === lang.code ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-700'
+                        }`}
+                    >
+                      <span>{lang.name}</span>
+                      {selectedLang.code === lang.code && <span className="material-symbols-outlined text-xs text-[#0058bc]">check</span>}
+                    </button>
+                  ))}
+                </div>
+                <div className="border-l border-gray-100 pl-3">
+                  <div className="px-1 pb-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Currency</div>
+                  {CURRENCIES.map((curr) => (
+                    <button
+                      key={curr.code}
+                      onClick={() => {
+                        setSelectedCurrency(curr);
+                        setShowLangDropdown(false);
+                      }}
+                      className={`w-full text-left px-2.5 py-1.5 text-xs font-semibold hover:bg-gray-50 rounded-lg transition-colors flex items-center justify-between cursor-pointer ${selectedCurrency.code === curr.code ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-700'
+                        }`}
+                    >
+                      <span>{curr.code} ({curr.symbol})</span>
+                      {selectedCurrency.code === curr.code && <span className="material-symbols-outlined text-xs text-[#0058bc]">check</span>}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
 
-          {/* Currency Dropdown */}
-          <div className="relative" ref={currRef}>
-            <button
-              onClick={() => { setShowCurrencyDropdown(!showCurrencyDropdown); setShowLangDropdown(false); }}
-              className="p-2 text-gray-600 hover:text-primary rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-1 cursor-pointer"
-              title="Change Currency"
-            >
-              <span className="material-symbols-outlined text-lg">payments</span>
-              <span className="text-xs font-bold">{selectedCurrency.code}</span>
-            </button>
-
-            {showCurrencyDropdown && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn">
-                <div className="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Select Currency</div>
-                {CURRENCIES.map((curr) => (
-                  <button
-                    key={curr.code}
-                    onClick={() => { setSelectedCurrency(curr); setShowCurrencyDropdown(false); }}
-                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer ${
-                      selectedCurrency.code === curr.code ? 'text-secondary font-bold bg-secondary/5' : 'text-gray-700'
-                    }`}
-                  >
-                    <span>{curr.label} ({curr.symbol})</span>
-                    {selectedCurrency.code === curr.code && <span className="material-symbols-outlined text-sm text-secondary">check</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Wishlist Button */}
-          <button
-            onClick={onOpenWishlist}
-            className="relative p-2 text-gray-600 hover:text-error rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
-            title="Saved Stays"
-          >
-            <span className="material-symbols-outlined text-xl">favorite</span>
-            {wishlistCount > 0 && (
-              <span className="absolute top-1 right-1 bg-error text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-sm animate-pulse">
-                {wishlistCount}
-              </span>
-            )}
-          </button>
-
-          {/* Auth/Profile */}
+          {/* Sign In Button / User Avatar */}
           {!user ? (
             <button
               onClick={onOpenAuth}
-              className="ml-2 font-bold text-xs bg-primary hover:bg-secondary text-white px-5 py-2.5 rounded-xl transition-all shadow-sm hover:shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5"
+              className="px-2.5 py-1.5 text-gray-700 hover:text-black font-bold text-xs rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-1 cursor-pointer"
             >
-              <span className="material-symbols-outlined text-base">account_circle</span>
-              Sign In
+              <span className="material-symbols-outlined text-lg">account_circle</span>
+              <span className="hidden sm:inline">Sign in</span>
             </button>
           ) : (
-            <div className="relative ml-2" ref={profileRef}>
-              <button
+            <div className="flex items-center">
+              <div
+                className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#0058bc] to-[#FF385C] text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer select-none"
                 onClick={() => {
-                  setShowProfileDropdown(!showProfileDropdown);
+                  setShowMenuDropdown(!showMenuDropdown);
                   setShowLangDropdown(false);
-                  setShowCurrencyDropdown(false);
                 }}
-                className="flex items-center gap-2 p-1.5 hover:bg-gray-100 rounded-xl transition-all cursor-pointer focus:outline-none"
+                title={`${user.firstName || user.FirstName || 'User'} Profile`}
               >
-                {/* User Avatar Circle */}
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-secondary to-primary text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                  {((user.firstName || user.FirstName || 'U')[0] + (user.lastName || user.LastName || '')[0] || 'U').toUpperCase()}
-                </div>
-                <span className="material-symbols-outlined text-gray-400 text-sm">expand_more</span>
-              </button>
+                {((user.firstName || user.FirstName || 'U')[0] + (user.lastName || user.LastName || '')[0] || 'U').toUpperCase()}
+              </div>
+            </div>
+          )}
 
-              {showProfileDropdown && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-gray-100 py-3.5 z-50 animate-fadeIn">
-                  {/* Profile Header */}
-                  <div className="px-4 pb-3 border-b border-gray-100 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-base">
+          {/* Menu Hamburger Button */}
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => {
+                setShowMenuDropdown(!showMenuDropdown);
+                setShowLangDropdown(false);
+              }}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer border border-transparent active:scale-95"
+            >
+              <span className="material-symbols-outlined text-lg">menu</span>
+              <span>Menu</span>
+            </button>
+
+            {/* Menu Dropdown Menu */}
+            {showMenuDropdown && (
+              <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 z-50 animate-fadeIn text-left">
+                {/* User Info Section */}
+                {user && (
+                  <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2.5 mb-1 bg-gray-50/50">
+                    <div className="w-8 h-8 rounded-lg bg-[#0058bc]/10 text-[#0058bc] flex items-center justify-center font-bold text-xs shrink-0">
                       {((user.firstName || user.FirstName || 'U')[0]).toUpperCase()}
                     </div>
                     <div className="flex flex-col min-w-0">
@@ -249,185 +231,136 @@ export default function Navbar({
                       <span className="text-[10px] text-gray-400 truncate font-semibold">{user.email || user.Email}</span>
                     </div>
                   </div>
+                )}
 
-                  {/* Role Badge Section */}
-                  <div className="px-4 py-2 flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Account Role</span>
-                    <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      isAdmin 
-                        ? 'bg-error/10 text-error' 
-                        : isOwner 
-                          ? 'bg-tertiary-fixed-dim/20 text-secondary' 
-                          : 'bg-primary/10 text-primary'
-                    }`}>
-                      {isAdmin ? 'Super Admin' : isOwner ? 'Hotel Owner' : 'Customer'}
-                    </span>
-                  </div>
+                {/* Menu Real Items */}
+                <button
+                  onClick={() => { setCurrentView("home"); setShowMenuDropdown(false); }}
+                  className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'home' ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-700'
+                    }`}
+                >
+                  <span className="material-symbols-outlined text-lg text-[#0058bc]">home</span>
+                  <span>Home</span>
+                </button>
 
-                  <div className="w-full h-px bg-gray-100 my-1"></div>
+                <button
+                  onClick={() => { setCurrentView("search"); setShowMenuDropdown(false); }}
+                  className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'search' ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-700'
+                    }`}
+                >
+                  <span className="material-symbols-outlined text-lg text-emerald-600">hotel</span>
+                  <span>Explore Stays & Resorts</span>
+                </button>
 
-                  {/* Profile Dropdown Actions */}
-                  {isOwner && (
-                    <button
-                      onClick={() => {
-                        setCurrentView('owner-dashboard');
-                        setShowProfileDropdown(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-2.5 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-base text-gray-400">space_dashboard</span>
-                      <span>Owner Portal</span>
-                    </button>
-                  )}
-
-                  {isAdmin && (
-                    <button
-                      onClick={() => {
-                        setCurrentView('admin-panel');
-                        setShowProfileDropdown(false);
-                      }}
-                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors flex items-center gap-2.5 cursor-pointer"
-                    >
-                      <span className="material-symbols-outlined text-base text-gray-400">verified_user</span>
-                      <span>Admin Panel</span>
-                    </button>
-                  )}
-
-                  <button
-                    onClick={() => {
-                      onLogout();
-                      setShowProfileDropdown(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-xs font-bold text-error hover:bg-error/5 transition-colors flex items-center gap-2.5 cursor-pointer mt-1"
-                  >
-                    <span className="material-symbols-outlined text-base text-error">logout</span>
-                    <span>Sign Out</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Mobile Hamburger Menu */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden text-gray-800 p-2 hover:bg-gray-100 rounded-xl cursor-pointer"
-          aria-label="Toggle menu"
-        >
-          <span className="material-symbols-outlined text-2xl">{mobileMenuOpen ? 'close' : 'menu'}</span>
-        </button>
-      </div>
-
-      {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 px-6 py-6 flex flex-col gap-3 shadow-2xl animate-fadeIn">
-          {/* Mobile Search */}
-          <div className="flex items-center bg-gray-100 rounded-xl px-3 py-2 mb-2">
-            <span className="material-symbols-outlined text-gray-400 mr-2">search</span>
-            <input
-              type="text"
-              placeholder="Search destination..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  onSearchSubmit && onSearchSubmit();
-                  setMobileMenuOpen(false);
-                }
-              }}
-              className="bg-transparent text-xs font-semibold outline-none w-full"
-            />
-            <button
-              onClick={() => {
-                onSearchSubmit && onSearchSubmit();
-                setMobileMenuOpen(false);
-              }}
-              className="text-xs font-bold text-secondary ml-2"
-            >
-              Search
-            </button>
-          </div>
-
-          {filteredLinks.map((link) => {
-            const isActive = currentView === link.id;
-            return (
-              <button
-                key={link.id}
-                onClick={() => { setCurrentView(link.id); setMobileMenuOpen(false); }}
-                className={`text-left text-sm font-bold py-2.5 px-3 rounded-xl flex items-center justify-between cursor-pointer transition-colors ${
-                  isActive ? 'bg-secondary/10 text-secondary font-extrabold' : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="material-symbols-outlined text-lg">{link.icon}</span>
-                  <span>{link.label}</span>
-                </div>
-                {isActive && <span className="material-symbols-outlined text-sm text-secondary">chevron_right</span>}
-              </button>
-            );
-          })}
-
-          <div className="border-t border-gray-100 pt-4 mt-2 flex flex-col gap-3">
-            <button
-              onClick={() => { onOpenWishlist(); setMobileMenuOpen(false); }}
-              className="flex items-center justify-between text-sm font-bold text-gray-700 py-2 px-3 rounded-xl hover:bg-gray-50 cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-error">favorite</span>
-                <span>Saved Stays</span>
-              </div>
-              <span className="bg-error text-white text-xs px-2 py-0.5 rounded-full font-bold">{wishlistCount}</span>
-            </button>
-
-            {!user ? (
-              <button
-                onClick={() => { onOpenAuth(); setMobileMenuOpen(false); }}
-                className="w-full bg-primary hover:bg-secondary text-white py-3 rounded-xl font-bold shadow-md text-sm cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined text-lg">login</span>
-                Sign In / Register
-              </button>
-            ) : (
-              <div className="bg-gray-50 rounded-2xl p-4 flex flex-col gap-3 text-left">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-secondary to-primary text-white flex items-center justify-center font-bold text-sm">
-                    {((user.firstName || user.FirstName || 'U')[0]).toUpperCase()}
-                  </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-bold text-xs text-gray-800 truncate">
-                      {user.firstName || user.FirstName || ''} {user.lastName || user.LastName || ''}
-                    </span>
-                    <span className="text-[10px] text-gray-400 truncate font-semibold">{user.email || user.Email}</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between border-t border-gray-100/50 pt-2.5">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Account Role</span>
-                  <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                    isAdmin 
-                      ? 'bg-error/10 text-error' 
-                      : isOwner 
-                        ? 'bg-tertiary-fixed-dim/20 text-secondary' 
-                        : 'bg-primary/10 text-primary'
-                  }`}>
-                    {isAdmin ? 'Super Admin' : isOwner ? 'Hotel Owner' : 'Customer'}
-                  </span>
-                </div>
                 <button
                   onClick={() => {
-                    onLogout();
-                    setMobileMenuOpen(false);
+                    setCurrentView("home");
+                    setShowMenuDropdown(false);
+                    setTimeout(() => document.getElementById('destinations')?.scrollIntoView({ behavior: 'smooth' }), 150);
                   }}
-                  className="w-full mt-1.5 border border-error/20 text-error hover:bg-error/5 py-2.5 rounded-xl font-bold text-xs cursor-pointer flex items-center justify-center gap-2"
+                  className="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-base">logout</span>
-                  Sign Out
+                  <span className="material-symbols-outlined text-lg text-rose-500">location_on</span>
+                  <span>Trending Destinations</span>
                 </button>
+
+                <button
+                  onClick={() => {
+                    setCurrentView("home");
+                    setShowMenuDropdown(false);
+                    setTimeout(() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' }), 150);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg text-amber-500">auto_awesome</span>
+                  <span>Featured Collections</span>
+                </button>
+
+                <button
+                  onClick={() => { onOpenWishlist(); setShowMenuDropdown(false); }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-between cursor-pointer"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="material-symbols-outlined text-lg text-[#FF385C]">favorite</span>
+                    <span>Saved Stays</span>
+                  </div>
+                  {wishlistCount > 0 && (
+                    <span className="bg-[#FF385C] text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setCurrentView("home");
+                    setShowMenuDropdown(false);
+                    setTimeout(() => document.getElementById('why-us')?.scrollIntoView({ behavior: 'smooth' }), 150);
+                  }}
+                  className="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg text-indigo-500">verified</span>
+                  <span>Why StaySphere</span>
+                </button>
+
+                <div className="w-full h-px bg-gray-100 my-1.5" />
+
+                {/* Property Owner Action */}
+                <button
+                  onClick={() => {
+                    setShowMenuDropdown(false);
+                    if (isOwner) {
+                      setCurrentView("owner-dashboard");
+                    } else if (!user) {
+                      onOpenAuth();
+                    } else {
+                      setCurrentView("owner-dashboard");
+                    }
+                  }}
+                  className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'owner-dashboard' ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-800 font-bold'
+                    }`}
+                >
+                  <span className="material-symbols-outlined text-lg text-purple-600">domain_add</span>
+                  <span>List Your Hotel / Property</span>
+                </button>
+
+                {isAdmin && (
+                  <button
+                    onClick={() => { setCurrentView("admin-panel"); setShowMenuDropdown(false); }}
+                    className={`w-full text-left px-4 py-2.5 text-xs font-semibold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'admin-panel' ? 'text-[#0058bc] font-bold bg-[#0058bc]/5' : 'text-gray-700'
+                      }`}
+                  >
+                    <span className="material-symbols-outlined text-lg text-blue-600">verified_user</span>
+                    <span>Admin Control Center</span>
+                  </button>
+                )}
+
+                <div className="w-full h-px bg-gray-100 my-1.5" />
+
+                {user ? (
+                  <button
+                    onClick={() => { onLogout(); setShowMenuDropdown(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-[#D4111E] hover:bg-[#D4111E]/5 transition-colors flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">logout</span>
+                    <span>Sign Out</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { onOpenAuth(); setShowMenuDropdown(false); }}
+                    className="w-full text-left px-4 py-2.5 text-xs font-bold text-[#0058bc] hover:bg-[#0058bc]/5 transition-colors flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-lg">login</span>
+                    <span>Sign In / Register</span>
+                  </button>
+                )}
               </div>
             )}
           </div>
+
         </div>
-      )}
+
+      </div>
     </header>
   );
 }

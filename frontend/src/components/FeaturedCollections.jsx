@@ -3,7 +3,7 @@ import { FEATURED_COLLECTIONS } from '../data/mockData';
 
 export default function FeaturedCollections({ activeCategory, onSelectCategory }) {
   return (
-    <section id="collections" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-16 bg-surface-container-low/60 rounded-3xl my-6">
+    <section id="collections" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-10 bg-surface-container-low/60 rounded-3xl my-4">
       <div className="flex justify-between items-end mb-10">
         <div>
           <span className="text-xs font-bold text-secondary uppercase tracking-widest block mb-1">Curated Travel</span>

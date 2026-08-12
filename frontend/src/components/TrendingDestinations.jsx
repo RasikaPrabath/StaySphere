@@ -16,9 +16,9 @@ export default function TrendingDestinations({ onSelectDestination, selectedDest
     <section id="destinations" className="w-full max-w-container-max mx-auto px-4 md:px-12 py-12">
       <div className="flex justify-between items-end mb-8">
         <div>
-          <span className="text-xs font-bold text-secondary uppercase tracking-widest block mb-1">Global Hotspots</span>
+          <span className="text-xs font-bold text-secondary uppercase tracking-widest block mb-1">Top Destinations</span>
           <h2 className="text-2xl md:text-3xl font-extrabold text-primary tracking-tight">Trending Destinations</h2>
-          <p className="text-sm md:text-base text-on-surface-variant font-medium mt-1">Explore top-rated locations for your next luxury escape.</p>
+          <p className="text-sm md:text-base text-on-surface-variant font-medium mt-1">Explore top-rated locations across Sri Lanka for your next luxury escape.</p>
         </div>
 
         <div className="hidden md:flex gap-3">
