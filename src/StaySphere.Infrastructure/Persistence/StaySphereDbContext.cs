@@ -15,6 +15,8 @@ namespace StaySphere.Infrastructure.Persistence
         public DbSet<Booking> Bookings => Set<Booking>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<Review> Reviews => Set<Review>();
+        public DbSet<Favorite> Favorites => Set<Favorite>();
+        public DbSet<Coupon> Coupons => Set<Coupon>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -87,6 +89,29 @@ namespace StaySphere.Infrastructure.Persistence
                       .WithMany(h => h.Reviews)
                       .HasForeignKey(rw => rw.HotelId)
                       .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Favorite configuration
+            modelBuilder.Entity<Favorite>(entity =>
+            {
+                entity.HasKey(f => f.Id);
+                entity.HasIndex(f => new { f.UserId, f.HotelId }).IsUnique();
+                entity.HasOne(f => f.User)
+                      .WithMany()
+                      .HasForeignKey(f => f.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(f => f.Hotel)
+                      .WithMany()
+                      .HasForeignKey(f => f.HotelId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Coupon configuration
+            modelBuilder.Entity<Coupon>(entity =>
+            {
+                entity.HasKey(c => c.Id);
+                entity.HasIndex(c => c.Code).IsUnique();
+                entity.Property(c => c.Code).IsRequired().HasMaxLength(50);
             });
         }
     }
