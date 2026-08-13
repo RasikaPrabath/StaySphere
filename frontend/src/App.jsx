@@ -12,6 +12,7 @@ import AdminPanel from './components/AdminPanel';
 import PropertyModal from './components/PropertyModal';
 import BookingModal from './components/BookingModal';
 import WishlistDrawer from './components/WishlistDrawer';
+import MyBookingsModal from './components/MyBookingsModal';
 import WhyUs from './components/WhyUs';
 import Testimonials from './components/Testimonials';
 import Newsletter from './components/Newsletter';
@@ -24,6 +25,8 @@ import { CURRENCIES, PROPERTIES } from './data/mockData';
 export default function App() {
   // Navigation View State: 'home' | 'search' | 'detail'
   const [currentView, setCurrentView] = useState("home");
+  const [isMyBookingsOpen, setIsMyBookingsOpen] = useState(false);
+  const [userBookings, setUserBookings] = useState([]);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("Colombo, Sri Lanka");
@@ -87,13 +90,13 @@ export default function App() {
   useEffect(() => {
     if (currentView === "admin-panel" && !isAdmin) {
       setCurrentView("home");
-      addToast("Access Restricted: Requires Super Admin privileges.");
+      addToast("Access Restricted: Requires Administrator privileges.");
     } else if (currentView === "owner-dashboard" && !isOwner) {
       setCurrentView("home");
-      addToast("Access Restricted: Requires Hotel Owner account.");
+      addToast("Access Restricted: Requires Partner (Hotel Owner) account.");
     } else if (currentView === "checkout" && !user) {
       setCurrentView("home");
-      addToast("Please sign in to complete your checkout.");
+      addToast("Please sign in to complete your stay reservation.");
     }
   }, [currentView, user, isAdmin, isOwner]);
 
@@ -159,6 +162,7 @@ export default function App() {
         onSearchSubmit={() => handleSearchSubmit()}
         user={user}
         onLogout={handleLogout}
+        onOpenMyBookings={() => setIsMyBookingsOpen(true)}
       />
 
       {/* Main View Router */}
@@ -169,7 +173,22 @@ export default function App() {
             onBack={() => setCurrentView("detail")}
             selectedCurrency={selectedCurrency}
             onConfirmBooking={(property, ref) => {
-              addToast(`Reservation ${ref} confirmed!`);
+              const newBk = {
+                id: "bk-" + Date.now(),
+                reference: ref || "STAY-" + Math.floor(100000 + Math.random() * 900000),
+                propertyName: property.title || property.Name || "Luxury Hotel",
+                roomType: bookingDetails?.room?.name || "Deluxe Suite",
+                city: property.location || property.City || "Sri Lanka",
+                image: property.image || property.ImageUrls?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+                checkIn: checkInDate,
+                checkOut: checkOutDate,
+                guests: `${guests.adults} Adults`,
+                totalPrice: property.price || 350.00,
+                status: "Confirmed",
+                bookedOn: new Date().toISOString().split('T')[0]
+              };
+              setUserBookings(prev => [newBk, ...prev]);
+              addToast(`Reservation ${newBk.reference} confirmed!`);
             }}
             onAddToast={addToast}
           />
@@ -294,6 +313,16 @@ export default function App() {
         onToggleWishlist={toggleWishlist}
         onSelectProperty={handleSelectProperty}
         selectedCurrency={selectedCurrency}
+      />
+
+      {/* My Bookings Modal */}
+      <MyBookingsModal
+        isOpen={isMyBookingsOpen}
+        onClose={() => setIsMyBookingsOpen(false)}
+        user={user}
+        userBookings={userBookings}
+        selectedCurrency={selectedCurrency}
+        onAddToast={addToast}
       />
 
       {/* Auth Modal */}

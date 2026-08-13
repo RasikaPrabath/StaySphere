@@ -27,7 +27,7 @@ export default function WhyUs() {
   return (
     <section id="why-us" className="w-full bg-[#F8FAFC] py-12 md:py-16 relative select-none border-y border-gray-100">
       <div className="max-w-container-max mx-auto px-3 md:px-4 relative z-10">
-        
+
         {/* Flat Minimalist Header */}
         <div className="text-center mb-10">
           <span className="text-xs font-extrabold text-[#0058bc] uppercase tracking-widest block mb-2">The StaySphere Difference</span>
@@ -40,7 +40,7 @@ export default function WhyUs() {
         {/* 4-Column Flat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {benefits.map((item, idx) => (
-            <div 
+            <div
               key={idx}
               className="flex flex-col items-center text-center p-6 rounded-2xl bg-white hover:shadow-lg transition-all duration-200 border border-gray-200/80 group"
             >

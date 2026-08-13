@@ -22,7 +22,7 @@ export default function Newsletter({ onAddToast }) {
         <h2 className="text-2xl md:text-3xl font-extrabold text-primary mb-3 tracking-tight">
           Get inspiration for your next trip
         </h2>
-        
+
         <p className="text-xs md:text-sm text-on-surface-variant mb-8 font-medium">
           Sign up for our newsletter to receive exclusive luxury offers, hidden gem guides, and VIP invitations.
         </p>
@@ -34,7 +34,7 @@ export default function Newsletter({ onAddToast }) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-            <input 
+            <input
               type="email"
               required
               placeholder="Your email address..."
@@ -42,7 +42,7 @@ export default function Newsletter({ onAddToast }) {
               onChange={e => setEmail(e.target.value)}
               className="flex-grow rounded-2xl border border-outline-variant px-5 py-3.5 text-xs font-semibold focus:ring-2 focus:ring-secondary focus:border-secondary outline-none shadow-sm"
             />
-            <button 
+            <button
               type="submit"
               className="bg-primary hover:bg-primary-container text-surface-white font-bold text-xs rounded-2xl px-8 py-3.5 transition-all shadow-md whitespace-nowrap active:scale-95"
             >

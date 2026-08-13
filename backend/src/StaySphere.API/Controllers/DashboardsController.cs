@@ -29,7 +29,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpGet("owner")]
-        [Authorize(Roles = "HotelOwner")]
+        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
         public async Task<IActionResult> GetOwnerDashboard()
         {
             var userId = GetCurrentUserId();

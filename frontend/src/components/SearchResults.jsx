@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { PROPERTIES } from '../data/mockData';
 import { searchApi } from '../data/api';
 
-export default function SearchResults({ 
-  searchQuery, 
-  onSelectProperty, 
-  wishlist, 
+export default function SearchResults({
+  searchQuery,
+  onSelectProperty,
+  wishlist,
   onToggleWishlist,
-  selectedCurrency 
+  selectedCurrency
 }) {
   const [budgetMax, setBudgetMax] = useState(2500);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [ratingFilter, setRatingFilter] = useState({ 9: false, 8: false, 7: false });
-  const [amenityFilter, setAmenityFilter] = useState({ 
-    wifi: false, 
-    pool: false, 
-    gym: false, 
+  const [amenityFilter, setAmenityFilter] = useState({
+    wifi: false,
+    pool: false,
+    gym: false,
     spa: false,
     oceanView: false,
     breakfast: false,
@@ -86,10 +86,10 @@ export default function SearchResults({
   };
 
   // Check active filters count
-  const activeFiltersCount = (budgetMax < 2500 ? 1 : 0) + 
-    (categoryFilter !== "all" ? 1 : 0) + 
-    Object.values(ratingFilter).filter(Boolean).length + 
-    Object.values(amenityFilter).filter(Boolean).length + 
+  const activeFiltersCount = (budgetMax < 2500 ? 1 : 0) +
+    (categoryFilter !== "all" ? 1 : 0) +
+    Object.values(ratingFilter).filter(Boolean).length +
+    Object.values(amenityFilter).filter(Boolean).length +
     (freeCancellationOnly ? 1 : 0);
 
   // Filter properties
@@ -158,11 +158,10 @@ export default function SearchResults({
             <button
               key={cat.id}
               onClick={() => setCategoryFilter(cat.id)}
-              className={`text-left text-xs px-3 py-2 rounded-xl font-medium transition-all ${
-                categoryFilter === cat.id 
-                  ? "bg-primary text-white font-bold shadow-sm" 
+              className={`text-left text-xs px-3 py-2 rounded-xl font-medium transition-all ${categoryFilter === cat.id
+                  ? "bg-primary text-white font-bold shadow-sm"
                   : "text-on-surface hover:bg-surface-container-low"
-              }`}
+                }`}
             >
               {cat.label}
             </button>
@@ -179,7 +178,7 @@ export default function SearchResults({
           </span>
         </div>
         <div className="px-1">
-          <input 
+          <input
             type="range"
             min="50"
             max="2500"
@@ -199,7 +198,7 @@ export default function SearchResults({
       <div className="border-t border-outline-variant/60 pt-4">
         <h3 className="text-xs font-bold text-on-surface mb-3 uppercase tracking-wider">Booking Perks</h3>
         <label className="flex items-center gap-2.5 cursor-pointer text-xs font-semibold text-on-surface">
-          <input 
+          <input
             type="checkbox"
             checked={freeCancellationOnly}
             onChange={(e) => setFreeCancellationOnly(e.target.checked)}
@@ -222,7 +221,7 @@ export default function SearchResults({
             { min: 7, label: "Good: 7+", count: 89 },
           ].map(item => (
             <label key={item.min} className="flex items-center gap-2 cursor-pointer text-xs font-medium text-on-surface hover:text-secondary">
-              <input 
+              <input
                 type="checkbox"
                 checked={ratingFilter[item.min]}
                 onChange={(e) => setRatingFilter({ ...ratingFilter, [item.min]: e.target.checked })}
@@ -249,7 +248,7 @@ export default function SearchResults({
             { key: "parking", label: "Free Parking / Shuttle", icon: "directions_car" },
           ].map(item => (
             <label key={item.key} className="flex items-center gap-2 cursor-pointer text-xs font-medium text-on-surface hover:text-secondary">
-              <input 
+              <input
                 type="checkbox"
                 checked={amenityFilter[item.key]}
                 onChange={(e) => setAmenityFilter({ ...amenityFilter, [item.key]: e.target.checked })}
@@ -277,7 +276,7 @@ export default function SearchResults({
               Filter Stays
             </h2>
             {activeFiltersCount > 0 && (
-              <button 
+              <button
                 onClick={handleClearFilters}
                 className="text-secondary font-bold text-xs hover:underline flex items-center gap-1"
               >
@@ -299,7 +298,7 @@ export default function SearchResults({
                   <span className="material-symbols-outlined text-secondary">tune</span>
                   Filter Properties
                 </h2>
-                <button 
+                <button
                   onClick={() => setIsMobileFilterOpen(false)}
                   className="p-1 rounded-full text-gray-400 hover:bg-gray-100"
                 >
@@ -311,13 +310,13 @@ export default function SearchResults({
             </div>
 
             <div className="pt-6 mt-6 border-t border-gray-150 flex items-center gap-3 bg-white sticky bottom-0">
-              <button 
+              <button
                 onClick={handleClearFilters}
                 className="w-1/3 py-3 rounded-xl border border-gray-300 font-bold text-xs text-gray-700 hover:bg-gray-50"
               >
                 Reset
               </button>
-              <button 
+              <button
                 onClick={() => setIsMobileFilterOpen(false)}
                 className="w-2/3 py-3 rounded-xl bg-primary text-white font-bold text-xs shadow-md hover:bg-secondary transition-all"
               >
@@ -338,11 +337,10 @@ export default function SearchResults({
                 {locationTitle}: {filtered.length > 0 ? `${filtered.length} properties found` : "0 properties found"}
               </h1>
               {searchSource && (
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
-                  searchSource === "Cache" 
-                    ? "bg-secondary-fixed/20 text-secondary border-secondary/20" 
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${searchSource === "Cache"
+                    ? "bg-secondary-fixed/20 text-secondary border-secondary/20"
                     : "bg-primary-fixed/20 text-primary border-primary/20"
-                }`}>
+                  }`}>
                   <span className="material-symbols-outlined text-[12px]">{searchSource === "Cache" ? "bolt" : "database"}</span>
                   {searchSource === "Cache" ? "Redis Cache" : "PostgreSQL"}
                 </span>
@@ -355,7 +353,7 @@ export default function SearchResults({
 
           <div className="flex items-center gap-3">
             {/* Mobile Filter Toggle Button */}
-            <button 
+            <button
               onClick={() => setIsMobileFilterOpen(true)}
               className="md:hidden flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm"
             >
@@ -366,7 +364,7 @@ export default function SearchResults({
             {/* Sort Dropdown */}
             <div className="flex items-center gap-2 bg-surface-container-low border border-outline-variant rounded-xl px-3 py-1.5">
               <span className="text-xs font-bold text-on-surface-variant whitespace-nowrap">Sort by:</span>
-              <select 
+              <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="border-none bg-transparent text-xs font-bold text-primary focus:ring-0 cursor-pointer outline-none"
@@ -414,12 +412,12 @@ export default function SearchResults({
             {Object.keys(amenityFilter).filter(k => amenityFilter[k]).map(k => (
               <span key={k} className="inline-flex items-center gap-1 bg-secondary text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-xs capitalize">
                 {k}
-                <button onClick={() => setAmenityFilter({...amenityFilter, [k]: false})} className="hover:text-amber-200">
+                <button onClick={() => setAmenityFilter({ ...amenityFilter, [k]: false })} className="hover:text-amber-200">
                   <span className="material-symbols-outlined text-xs">close</span>
                 </button>
               </span>
             ))}
-            <button 
+            <button
               onClick={handleClearFilters}
               className="text-xs font-extrabold text-secondary hover:underline ml-auto"
             >
@@ -441,7 +439,7 @@ export default function SearchResults({
             <p className="text-xs text-on-surface-variant mb-6">
               Try adjusting your price budget or clearing filters to view available stays.
             </p>
-            <button 
+            <button
               onClick={() => {
                 setBudgetMax(1000);
                 setRatingFilter({ 9: false, 8: false, 7: false });
@@ -461,20 +459,20 @@ export default function SearchResults({
               const convertedTaxes = property.taxes ? Math.round(property.taxes * currencyRate) : 35;
 
               return (
-                <div 
+                <div
                   key={property.id}
                   onClick={() => onSelectProperty(property)}
                   className="bg-surface-white rounded-2xl border border-outline-variant shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row overflow-hidden group cursor-pointer"
                 >
                   {/* Property Image & Heart */}
                   <div className="w-full sm:w-1/3 h-52 sm:h-auto relative bg-surface-container-high shrink-0">
-                    <img 
-                      src={property.images[0]} 
+                    <img
+                      src={property.images[0]}
                       alt={property.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />
-                    
-                    <button 
+
+                    <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -559,7 +557,7 @@ export default function SearchResults({
                         <p className="text-[11px] text-on-surface-variant mb-2">
                           +{currencySymbol}{convertedTaxes} taxes and charges
                         </p>
-                        <button 
+                        <button
                           onClick={() => onSelectProperty(property)}
                           className="bg-secondary hover:bg-primary text-white font-bold text-xs px-6 py-2.5 rounded-xl transition-all shadow-sm w-full sm:w-auto active:scale-95"
                         >
@@ -577,7 +575,7 @@ export default function SearchResults({
         {/* Pagination */}
         <div className="flex justify-center mt-6">
           <div className="flex items-center gap-1 border border-outline-variant rounded-xl bg-surface-white overflow-hidden shadow-sm">
-            <button 
+            <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               className="px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors border-r border-outline-variant"
             >
@@ -588,7 +586,7 @@ export default function SearchResults({
             <button className={`px-4 py-2 font-bold text-xs ${currentPage === 3 ? 'bg-secondary text-white' : 'text-on-surface hover:bg-surface-container-low'}`} onClick={() => setCurrentPage(3)}>3</button>
             <span className="px-2 text-xs text-on-surface-variant">...</span>
             <button className="px-4 py-2 font-bold text-xs text-on-surface hover:bg-surface-container-low">15</button>
-            <button 
+            <button
               onClick={() => setCurrentPage(currentPage + 1)}
               className="px-3 py-2 text-on-surface-variant hover:bg-surface-container-low transition-colors border-l border-outline-variant"
             >

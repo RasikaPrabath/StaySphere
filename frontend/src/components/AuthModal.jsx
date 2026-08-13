@@ -3,6 +3,7 @@ import { authApi } from '../data/api';
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("Customer");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -34,9 +35,10 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
         try {
           const user = await authApi.register(email, password, firstName, lastName, dummyPhone);
-          onLoginSuccess && onLoginSuccess(user);
+          const updatedUser = { ...user, role: selectedRole };
+          onLoginSuccess && onLoginSuccess(updatedUser);
         } catch {
-          const mockUser = { id: "u-" + Date.now(), email, firstName, lastName, role: "Customer", isEmailVerified: true };
+          const mockUser = { id: "u-" + Date.now(), email, firstName, lastName, role: selectedRole, isEmailVerified: true };
           localStorage.setItem('accessToken', 'demo-token-' + Date.now());
           onLoginSuccess && onLoginSuccess(mockUser);
         }
@@ -66,7 +68,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
       <div className="bg-surface-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-outline-variant relative animate-slideUp">
-        
+
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-sm">S</div>
@@ -107,23 +109,47 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {isSignUp && (
-            <div>
-              <label className="text-xs font-bold text-primary block mb-1">Full Name</label>
-              <input 
-                type="text" 
-                required
-                placeholder="e.g. Lord Byron"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                className="w-full border border-outline-variant rounded-xl p-3 text-xs outline-none focus:ring-2 focus:ring-secondary"
-              />
-            </div>
+            <>
+              <div>
+                <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block mb-2">Account Type</label>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole("Customer")}
+                    className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${selectedRole === 'Customer' ? 'bg-[#0058bc] text-white border-[#0058bc] shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+                  >
+                    <span className="material-symbols-outlined text-sm">person</span>
+                    Traveler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedRole("HotelOwner")}
+                    className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${selectedRole === 'HotelOwner' ? 'bg-[#0058bc] text-white border-[#0058bc] shadow-sm' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'}`}
+                  >
+                    <span className="material-symbols-outlined text-sm">domain</span>
+                    Property Partner
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-primary block mb-1">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Lord Byron"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  className="w-full border border-outline-variant rounded-xl p-3 text-xs outline-none focus:ring-2 focus:ring-secondary"
+                />
+              </div>
+            </>
           )}
 
           <div>
             <label className="text-xs font-bold text-primary block mb-1">Email Address</label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               required
               placeholder="user@staysphere.com"
               value={email}
@@ -134,8 +160,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
           <div>
             <label className="text-xs font-bold text-primary block mb-1">Password</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               required
               placeholder="••••••••"
               value={password}
@@ -155,7 +181,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
         <div className="mt-6 text-center text-xs text-on-surface-variant">
           {isSignUp ? "Already have an account?" : "Don't have an account yet?"}{" "}
-          <button 
+          <button
             onClick={() => setIsSignUp(!isSignUp)}
             className="text-secondary font-bold hover:underline ml-1"
           >

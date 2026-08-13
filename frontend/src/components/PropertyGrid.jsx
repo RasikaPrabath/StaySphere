@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { PROPERTIES } from '../data/mockData';
 
-export default function PropertyGrid({ 
-  selectedCategory, 
-  locationQuery, 
+export default function PropertyGrid({
+  selectedCategory,
+  locationQuery,
   selectedDestination,
   selectedCurrency,
   onSelectProperty,
@@ -93,9 +93,8 @@ export default function PropertyGrid({
                 <button
                   key={btn.id}
                   onClick={() => setPriceFilter(btn.id)}
-                  className={`pb-1 text-xs font-bold transition-all relative cursor-pointer ${
-                    isSelected ? 'text-primary font-extrabold' : 'text-gray-500 hover:text-gray-900 font-medium'
-                  }`}
+                  className={`pb-1 text-xs font-bold transition-all relative cursor-pointer ${isSelected ? 'text-primary font-extrabold' : 'text-gray-500 hover:text-gray-900 font-medium'
+                    }`}
                 >
                   {btn.label}
                   {isSelected && (
@@ -122,9 +121,8 @@ export default function PropertyGrid({
                 <button
                   key={btn.id}
                   onClick={() => setAmenityFilter(btn.id)}
-                  className={`pb-1 text-xs font-bold flex items-center gap-1 transition-all relative cursor-pointer ${
-                    isSelected ? 'text-secondary font-extrabold' : 'text-gray-500 hover:text-gray-900 font-medium'
-                  }`}
+                  className={`pb-1 text-xs font-bold flex items-center gap-1 transition-all relative cursor-pointer ${isSelected ? 'text-secondary font-extrabold' : 'text-gray-500 hover:text-gray-900 font-medium'
+                    }`}
                 >
                   <span className={`material-symbols-outlined text-xs ${isSelected ? 'text-secondary' : 'text-gray-400'}`}>{btn.icon}</span>
                   <span>{btn.label}</span>
@@ -137,7 +135,7 @@ export default function PropertyGrid({
           </div>
 
           {hasActiveGridFilters && (
-            <button 
+            <button
               onClick={resetAllGridFilters}
               className="text-xs font-bold text-error hover:underline ml-2"
             >
@@ -155,7 +153,7 @@ export default function PropertyGrid({
           <p className="text-xs text-on-surface-variant mb-6">
             Try adjusting your search criteria or price filters to see more luxury stays.
           </p>
-          <button 
+          <button
             onClick={() => setPriceFilter("all")}
             className="bg-secondary text-white text-xs font-bold px-6 py-2.5 rounded-xl hover:bg-secondary-container transition-colors shadow-sm"
           >
@@ -169,18 +167,18 @@ export default function PropertyGrid({
             const convertedPrice = Math.round(property.price * currencyRate);
 
             return (
-              <div 
+              <div
                 key={property.id}
                 className="bg-surface-white rounded-3xl overflow-hidden border border-outline-variant/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group"
               >
                 {/* Image Gallery Container */}
                 <div className="relative aspect-[16/10] overflow-hidden bg-surface-container-high cursor-pointer" onClick={() => onSelectProperty(property)}>
-                  <img 
-                    src={property.images[0]} 
+                  <img
+                    src={property.images[0]}
                     alt={property.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
-                  
+
                   {/* Category Tag */}
                   <span className="absolute top-4 left-4 bg-primary/80 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-extrabold text-white uppercase tracking-wider">
                     {property.category.replace("-", " ")}
@@ -217,7 +215,7 @@ export default function PropertyGrid({
                       </div>
                     </div>
 
-                    <h3 
+                    <h3
                       onClick={() => onSelectProperty(property)}
                       className="text-lg font-bold text-primary hover:text-secondary transition-colors cursor-pointer line-clamp-1 mb-2"
                     >
