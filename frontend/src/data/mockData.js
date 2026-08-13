@@ -5,7 +5,14 @@ export const FEATURED_COLLECTIONS = [
     count: "450+ stays",
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     tag: "Coastal Escapes",
-    description: "Sun-drenched oceanfront villas and luxury beach resorts in Galle, Bentota, Weligama & Tangalle."
+    description: "Sun-drenched oceanfront villas and luxury beach resorts in Galle, Bentota, Weligama & Tangalle.",
+    priceFrom: "$145",
+    originalPrice: "$185",
+    discount: "20% OFF",
+    rating: 4.9,
+    reviews: 512,
+    offer: "Free Breakfast",
+    perk: "Ocean View"
   },
   {
     id: "luxury-villas",
@@ -13,7 +20,14 @@ export const FEATURED_COLLECTIONS = [
     count: "320+ stays",
     image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80",
     tag: "Colonial Luxury",
-    description: "Restored 17th-century Dutch villas, private butler estates, and boutique sanctuaries."
+    description: "Restored 17th-century Dutch villas, private butler estates, and boutique sanctuaries.",
+    priceFrom: "$165",
+    originalPrice: "$210",
+    discount: "22% OFF",
+    rating: 4.9,
+    reviews: 380,
+    offer: "Butler Service",
+    perk: "Free Cancel"
   },
   {
     id: "mountain-retreats",
@@ -21,7 +35,14 @@ export const FEATURED_COLLECTIONS = [
     count: "280+ stays",
     image: "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=1200&q=80",
     tag: "Highland Sanctuaries",
-    description: "Misty mountain lodges, fireside bungalows, and tea plantation suites in Nuwara Eliya & Ella."
+    description: "Misty mountain lodges, fireside bungalows, and tea plantation suites in Nuwara Eliya & Ella.",
+    priceFrom: "$115",
+    originalPrice: "$140",
+    discount: "18% OFF",
+    rating: 4.8,
+    reviews: 290,
+    offer: "High Tea Included",
+    perk: "Mountain View"
   },
   {
     id: "boutique-city",
@@ -29,7 +50,29 @@ export const FEATURED_COLLECTIONS = [
     count: "390+ stays",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80",
     tag: "City Sophistication",
-    description: "5-star skyline hotels and ocean-view luxury suites in the heart of Colombo."
+    description: "5-star skyline hotels and ocean-view luxury suites in the heart of Colombo.",
+    priceFrom: "$130",
+    originalPrice: "$160",
+    discount: "15% OFF",
+    rating: 4.9,
+    reviews: 445,
+    offer: "Rooftop Pool",
+    perk: "Instant Book"
+  },
+  {
+    id: "wildlife-safari",
+    title: "Wilderness Lodges & Safaris",
+    count: "210+ stays",
+    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=80",
+    tag: "Safari Escapes",
+    description: "Luxury safari glamping tents and eco-villas near Yala, Udawalawe & Wilpattu.",
+    priceFrom: "$125",
+    originalPrice: "$155",
+    discount: "20% OFF",
+    rating: 4.9,
+    reviews: 310,
+    offer: "Safari Perk",
+    perk: "All Inclusive"
   }
 ];
 
@@ -40,6 +83,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "120+ stays",
     rating: 4.9,
+    reviews: 620,
+    priceFrom: "$120",
+    originalPrice: "$150",
+    discount: "20% OFF",
+    offer: "Free Breakfast",
     image: "https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=800&q=80",
     description: "Vibrant coastal capital featuring 5-star harbor hotels, colonial dining, and oceanfront suites."
   },
@@ -49,6 +97,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "95+ stays",
     rating: 4.9,
+    reviews: 510,
+    priceFrom: "$135",
+    originalPrice: "$170",
+    discount: "20% OFF",
+    offer: "Rampart View",
     image: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=800&q=80",
     description: "UNESCO World Heritage Dutch fort, private rampart villas, and turquoise beach bays."
   },
@@ -58,6 +111,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "80+ stays",
     rating: 4.8,
+    reviews: 430,
+    priceFrom: "$95",
+    originalPrice: "$115",
+    discount: "17% OFF",
+    offer: "Lake View Suite",
     image: "https://images.unsplash.com/photo-1588598198321-9735fd524557?auto=format&fit=crop&w=800&q=80",
     description: "Scenic sacred hill capital with serene lakefront retreats and luxury river sanctuaries."
   },
@@ -67,6 +125,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "110+ stays",
     rating: 4.9,
+    reviews: 490,
+    priceFrom: "$105",
+    originalPrice: "$130",
+    discount: "19% OFF",
+    offer: "Mountain Chalet",
     image: "https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&w=800&q=80",
     description: "Panoramic cloud forest lodges, nine arch views, and mountain wellness resorts."
   },
@@ -76,6 +139,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "65+ stays",
     rating: 4.8,
+    reviews: 350,
+    priceFrom: "$110",
+    originalPrice: "$135",
+    discount: "18% OFF",
+    offer: "Eco Pool Villa",
     image: "https://images.unsplash.com/photo-1578637387939-43c525550085?auto=format&fit=crop&w=800&q=80",
     description: "Ancient rock fortress views, luxury lakefront eco-villas, and jungle retreats."
   },
@@ -85,6 +153,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "75+ stays",
     rating: 4.9,
+    reviews: 380,
+    priceFrom: "$115",
+    originalPrice: "$145",
+    discount: "20% OFF",
+    offer: "Fireside Tea Suite",
     image: "https://images.unsplash.com/photo-1502784444187-359ac186c5bb?auto=format&fit=crop&w=800&q=80",
     description: "Little England tea estate bungalows, fireside suites, and highland golf resorts."
   },
@@ -94,6 +167,11 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "90+ stays",
     rating: 4.8,
+    reviews: 410,
+    priceFrom: "$125",
+    originalPrice: "$160",
+    discount: "22% OFF",
+    offer: "Ocean Infinity Pool",
     image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
     description: "Prime surfing bays, luxury oceanfront infinity pools, and whale watching resorts."
   },
@@ -103,8 +181,41 @@ export const TRENDING_DESTINATIONS = [
     country: "Sri Lanka",
     stays: "85+ stays",
     rating: 4.8,
+    reviews: 370,
+    priceFrom: "$118",
+    originalPrice: "$145",
+    discount: "18% OFF",
+    offer: "Beach Lagoon Villa",
     image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80",
     description: "Golden sand beach resorts, river lagoon villas, and water sport retreats."
+  },
+  {
+    id: "yala",
+    name: "Yala National Park",
+    country: "Sri Lanka",
+    stays: "60+ stays",
+    rating: 4.9,
+    reviews: 320,
+    priceFrom: "$130",
+    originalPrice: "$165",
+    discount: "21% OFF",
+    offer: "Free Game Drive",
+    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=80",
+    description: "Luxury safari glamping tents and wild eco-lodges near Yala National Park."
+  },
+  {
+    id: "trincomalee",
+    name: "Trincomalee & Nilaveli",
+    country: "Sri Lanka",
+    stays: "70+ stays",
+    rating: 4.8,
+    reviews: 290,
+    priceFrom: "$98",
+    originalPrice: "$120",
+    discount: "18% OFF",
+    offer: "Pigeon Island Perk",
+    image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+    description: "Crystal clear East Coast waters, coral reef snorkeling, and secluded beach stays."
   }
 ];
 

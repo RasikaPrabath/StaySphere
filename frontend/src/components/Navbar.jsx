@@ -413,7 +413,7 @@ export default function Navbar({
                     className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'admin-panel' ? 'text-[#0284c7] font-bold bg-sky-50' : 'text-[#0284c7]'}`}
                   >
                     <span className="material-symbols-outlined text-lg text-[#0284c7]">admin_panel_settings</span>
-                    <span>Super Admin Control Center</span>
+                    <span>{userRole === 'SuperAdmin' || userRole === 5 ? "Super Admin Control Center" : "Admin Control Panel"}</span>
                   </button>
                 )}
 

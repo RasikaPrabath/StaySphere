@@ -153,6 +153,7 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
               { id: 'approvals', label: 'Hotel Approvals', icon: 'domain_verification' },
               { id: 'users', label: 'User & Role Management', icon: 'group' },
               { id: 'analytics', label: 'Platform Analytics', icon: 'monitoring' },
+              { id: 'audit', label: 'Audit Logs & Security', icon: 'shield_person' },
               { id: 'settings', label: 'Global Settings', icon: 'settings' }
             ].map(item => {
               const isActive = activeTab === item.id;
@@ -394,6 +395,44 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
                 >
                   Save Configurations
                 </button>
+              </div>
+            )}
+
+            {/* TAB: AUDIT LOGS */}
+            {activeTab === 'audit' && (
+              <div className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm p-6 space-y-4">
+                <div className="flex justify-between items-center pb-3 border-b border-outline-variant/40">
+                  <div>
+                    <h3 className="font-bold text-sm text-primary">System Audit Trail & Security Logs</h3>
+                    <p className="text-xs text-on-surface-variant">Immutable history of administrative actions, role changes, and system events.</p>
+                  </div>
+                  <span className="bg-sky-100 text-sky-900 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase">
+                    Encrypted Audit Log
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {[
+                    { id: "LOG-109", action: "Approved Hotel Listing", details: "Approved 'The Azure Coastal Retreat' in Bentota", actor: "System Admin (Rasika)", timestamp: "2026-08-13 15:40", category: "Listing Approval" },
+                    { id: "LOG-108", action: "Role Modified", details: "Promoted 'Kavindu Perera' from Traveler to HotelOwner", actor: "SuperAdmin (Rasika)", timestamp: "2026-08-13 14:15", category: "Security & Access" },
+                    { id: "LOG-107", action: "Commission Rate Changed", details: "Platform commission updated from 7.5% to 8.0%", actor: "SuperAdmin (Rasika)", timestamp: "2026-08-12 11:20", category: "Financial Config" },
+                    { id: "LOG-106", action: "User Suspended", details: "Suspended account 'Amara Wickrama' due to policy flag", actor: "SuperAdmin (Rasika)", timestamp: "2026-08-11 09:05", category: "Account Security" }
+                  ].map((log) => (
+                    <div key={log.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs">
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="font-extrabold text-[#0058bc]">{log.action}</span>
+                          <span className="text-[9px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-bold">{log.category}</span>
+                        </div>
+                        <p className="text-slate-600 font-medium">{log.details}</p>
+                      </div>
+                      <div className="text-right shrink-0 text-[11px] text-slate-500 font-semibold">
+                        <div>{log.actor}</div>
+                        <div className="text-[10px] text-slate-400">{log.timestamp}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
