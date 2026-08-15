@@ -18,6 +18,7 @@ export default function TravelerDashboard({
     { id: 1, sender: 'bot', text: `Ayubowan ${user?.firstName || 'Valued Guest'}! I am your StaySphere Virtual Concierge. How can I assist you with your travels in Sri Lanka today?` }
   ]);
 
+  
   // Profile Form States
   const [profileName, setProfileName] = useState(`${user?.firstName || ''} ${user?.lastName || ''}`.trim());
   const [profilePhone, setProfilePhone] = useState(user?.phoneNumber || "0771234567");
