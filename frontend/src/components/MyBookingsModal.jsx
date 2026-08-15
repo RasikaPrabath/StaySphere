@@ -3,6 +3,7 @@ import React from 'react';
 export default function MyBookingsModal({ isOpen, onClose, user, userBookings = [], selectedCurrency, onAddToast }) {
   if (!isOpen) return null;
 
+  
   const mockBookings = userBookings.length > 0 ? userBookings : [
     {
       id: "bk-982145",
