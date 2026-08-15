@@ -121,7 +121,7 @@ namespace StaySphere.API.Controllers
         public CouponsController(ICouponService couponService) => _couponService = couponService;
 
         [HttpPost]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponRequest request)
         {
             try
@@ -142,7 +142,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllCoupons()
         {
             var coupons = await _couponService.GetAllCouponsAsync();
@@ -150,7 +150,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpDelete("{id:guid}/deactivate")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeactivateCoupon(Guid id)
         {
             try

@@ -69,13 +69,14 @@ export const authApi = {
     return user;
   },
 
-  register: async (email, password, firstName, lastName, phoneNumber) => {
+  register: async (email, password, firstName, lastName, phoneNumber, role = 1) => {
     const response = await apiClient.post('/auth/register', {
       email,
       password,
       firstName,
       lastName,
       phoneNumber,
+      role: Number(role),
     });
     const { accessToken, refreshToken, user } = response.data;
     localStorage.setItem('accessToken', accessToken);

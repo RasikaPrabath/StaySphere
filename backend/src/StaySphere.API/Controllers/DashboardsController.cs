@@ -21,7 +21,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpGet("admin")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAdminDashboard()
         {
             var data = await _dashboardService.GetAdminDashboardAsync();
@@ -29,7 +29,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpGet("owner")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> GetOwnerDashboard()
         {
             var userId = GetCurrentUserId();
@@ -40,7 +40,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpGet("staff/{hotelId:guid}")]
-        [Authorize(Roles = "HotelStaff,HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> GetStaffDashboard(Guid hotelId)
         {
             var data = await _dashboardService.GetStaffDashboardAsync(hotelId);

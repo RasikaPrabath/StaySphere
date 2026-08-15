@@ -6,7 +6,8 @@ export default function Navbar({
   setCurrentView,
   wishlistCount = 0,
   onOpenWishlist,
-  onOpenAuth,
+  onOpenTravelerAuth,
+  onOpenPartnerAuth,
   selectedCurrency,
   setSelectedCurrency,
   searchQuery,
@@ -44,9 +45,9 @@ export default function Navbar({
   };
 
   const userRole = user?.role || user?.Role;
-  const isStaff = userRole === 'HotelStaff' || userRole === 2;
-  const isOwner = userRole === 'HotelOwner' || userRole === 3 || userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
-  const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
+  const isStaff = false;
+  const isOwner = userRole === 'Partner' || userRole === 2 || userRole === 'Admin' || userRole === 3;
+  const isAdmin = userRole === 'Admin' || userRole === 3;
 
   const getUserInitials = (u) => {
     if (!u) return 'U';
@@ -96,8 +97,8 @@ export default function Navbar({
             <button
               onClick={() => setCurrentView("search")}
               className={`px-3 py-1.5 text-xs font-bold rounded-full transition-all cursor-pointer flex items-center gap-1.5 ${currentView === 'search' || currentView === 'home'
-                  ? 'text-white bg-white/15 border border-white/20 shadow-sm'
-                  : 'text-sky-100/90 hover:text-white hover:bg-white/10'
+                ? 'text-white bg-white/15 border border-white/20 shadow-sm'
+                : 'text-sky-100/90 hover:text-white hover:bg-white/10'
                 }`}
             >
               <span className="material-symbols-outlined text-base">bed</span>
@@ -150,15 +151,6 @@ export default function Navbar({
               <span>Destinations</span>
             </button>
 
-            <button
-              onClick={() => {
-                if (isOwner) setCurrentView("owner-dashboard");
-                else onOpenAuth();
-              }}
-              className="px-2.5 py-1 text-xs font-bold text-white hover:text-sky-300 underline underline-offset-4 decoration-sky-400 hover:decoration-sky-300 transition-all cursor-pointer ml-1 whitespace-nowrap"
-            >
-              List Your Property
-            </button>
           </nav>
 
           {/* Quick Header Search Bar - Only show when NOT on home view */}
@@ -242,13 +234,26 @@ export default function Navbar({
 
           {/* Sign In Button / User Avatar */}
           {!user ? (
-            <button
-              onClick={onOpenAuth}
-              className="px-2.5 py-1.5 text-sky-100/90 hover:text-white font-bold text-xs rounded-lg hover:bg-blue-900/50 transition-colors flex items-center gap-1 cursor-pointer shrink-0 whitespace-nowrap"
-            >
-              <span className="material-symbols-outlined text-lg">account_circle</span>
-              <span className="hidden sm:inline">Sign in</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onOpenPartnerAuth && onOpenPartnerAuth(false)}
+                className="text-white hover:bg-white/10 font-bold text-xs px-3 py-2 rounded-lg transition-all cursor-pointer hidden md:inline-block whitespace-nowrap"
+              >
+                List your property
+              </button>
+              <button
+                onClick={() => onOpenTravelerAuth && onOpenTravelerAuth(true)}
+                className="bg-white hover:bg-sky-50 text-[#0058bc] font-bold text-xs px-3.5 py-1.5 rounded-lg transition-all shadow-sm cursor-pointer whitespace-nowrap"
+              >
+                Register
+              </button>
+              <button
+                onClick={() => onOpenTravelerAuth && onOpenTravelerAuth(false)}
+                className="bg-white hover:bg-sky-50 text-[#0058bc] font-bold text-xs px-3.5 py-1.5 rounded-lg transition-all shadow-sm cursor-pointer whitespace-nowrap"
+              >
+                Sign in
+              </button>
+            </div>
           ) : (
             <div className="flex items-center shrink-0">
               <div
@@ -295,13 +300,10 @@ export default function Navbar({
                       </div>
                     </div>
                     <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full shrink-0 uppercase tracking-wider ${isAdmin ? "bg-sky-100 text-sky-900" :
-                      isOwner ? "bg-cyan-100 text-cyan-900" :
-                        isStaff ? "bg-sky-50 text-sky-800" : "bg-sky-100 text-sky-800"
+                      isOwner ? "bg-cyan-100 text-cyan-900" : "bg-sky-100 text-sky-800"
                       }`}>
-                      {userRole === 'SuperAdmin' || userRole === 5 ? "SuperAdmin" :
-                        userRole === 'Admin' || userRole === 4 ? "Admin" :
-                          userRole === 'HotelOwner' || userRole === 3 ? "Partner" :
-                            userRole === 'HotelStaff' || userRole === 2 ? "Staff" : "Traveler"}
+                      {userRole === 'Admin' || userRole === 3 ? "Admin" :
+                        userRole === 'Partner' || userRole === 2 ? "Partner" : "Traveler"}
                     </span>
                   </div>
                 )}
@@ -367,13 +369,13 @@ export default function Navbar({
                 {user && (
                   <button
                     onClick={() => {
-                      onOpenMyBookings && onOpenMyBookings();
+                      setCurrentView("traveler-dashboard");
                       setShowMenuDropdown(false);
                     }}
-                    className="w-full text-left px-4 py-2.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer"
+                    className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'traveler-dashboard' ? 'text-[#0058bc] bg-blue-50/50' : 'text-slate-700'}`}
                   >
-                    <span className="material-symbols-outlined text-lg text-[#0284c7]">confirmation_number</span>
-                    <span>My Stay Reservations</span>
+                    <span className="material-symbols-outlined text-lg text-[#0058bc]">dashboard</span>
+                    <span>Traveler Dashboard</span>
                   </button>
                 )}
 
@@ -395,7 +397,7 @@ export default function Navbar({
                   <button
                     onClick={() => {
                       setShowMenuDropdown(false);
-                      onOpenAuth();
+                      onOpenPartnerAuth && onOpenPartnerAuth(false);
                     }}
                     className="w-full text-left px-4 py-2.5 text-xs font-bold text-[#0284c7] hover:bg-sky-50 transition-colors flex items-center gap-2.5 cursor-pointer"
                   >
@@ -413,7 +415,7 @@ export default function Navbar({
                     className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'admin-panel' ? 'text-[#0284c7] font-bold bg-sky-50' : 'text-[#0284c7]'}`}
                   >
                     <span className="material-symbols-outlined text-lg text-[#0284c7]">admin_panel_settings</span>
-                    <span>{userRole === 'SuperAdmin' || userRole === 5 ? "Super Admin Control Center" : "Admin Control Panel"}</span>
+                    <span>Admin Control Panel</span>
                   </button>
                 )}
 

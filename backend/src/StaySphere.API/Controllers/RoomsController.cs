@@ -43,7 +43,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost("api/v1/hotels/{hotelId:guid}/rooms")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> CreateRoom(Guid hotelId, [FromBody] CreateRoomRequest request)
         {
             var userId = GetCurrentUserId();
@@ -65,7 +65,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPut("api/v1/rooms/{id:guid}")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] UpdateRoomRequest request)
         {
             var userId = GetCurrentUserId();
@@ -87,7 +87,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpDelete("api/v1/rooms/{id:guid}")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> DeleteRoom(Guid id)
         {
             var userId = GetCurrentUserId();
@@ -109,7 +109,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost("api/v1/rooms/{id:guid}/images")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> UploadRoomImage(Guid id, IFormFile file)
         {
             var userId = GetCurrentUserId();
@@ -135,7 +135,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPatch("api/v1/rooms/{id:guid}/status")]
-        [Authorize(Roles = "HotelOwner,HotelStaff,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> UpdateRoomStatus(Guid id, [FromBody] RoomStatus status)
         {
             var userId = GetCurrentUserId();

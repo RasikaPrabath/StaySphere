@@ -138,25 +138,12 @@ using (var scope = app.Services.CreateScope())
                 new StaySphere.Domain.Entities.User
                 {
                     Id = Guid.NewGuid(),
-                    Email = "staff@staysphere.com",
-                    PasswordHash = hasher.HashPassword("Password123!"),
-                    FirstName = "Nimal",
-                    LastName = "Fernando",
-                    PhoneNumber = "0772345678",
-                    Role = StaySphere.Domain.Enums.UserRole.HotelStaff,
-                    IsEmailVerified = true,
-                    CreatedAtUtc = DateTime.UtcNow,
-                    LastModifiedAtUtc = DateTime.UtcNow
-                },
-                new StaySphere.Domain.Entities.User
-                {
-                    Id = Guid.NewGuid(),
                     Email = "owner@staysphere.com",
                     PasswordHash = hasher.HashPassword("Password123!"),
                     FirstName = "Kamal",
                     LastName = "Silva",
                     PhoneNumber = "0773456789",
-                    Role = StaySphere.Domain.Enums.UserRole.HotelOwner,
+                    Role = StaySphere.Domain.Enums.UserRole.Partner,
                     IsEmailVerified = true,
                     CreatedAtUtc = DateTime.UtcNow,
                     LastModifiedAtUtc = DateTime.UtcNow
@@ -173,26 +160,31 @@ using (var scope = app.Services.CreateScope())
                     IsEmailVerified = true,
                     CreatedAtUtc = DateTime.UtcNow,
                     LastModifiedAtUtc = DateTime.UtcNow
-                },
-                new StaySphere.Domain.Entities.User
-                {
-                    Id = Guid.NewGuid(),
-                    Email = "superadmin@staysphere.com",
-                    PasswordHash = hasher.HashPassword("Password123!"),
-                    FirstName = "Root",
-                    LastName = "SuperAdmin",
-                    PhoneNumber = "0775678901",
-                    Role = StaySphere.Domain.Enums.UserRole.SuperAdmin,
-                    IsEmailVerified = true,
-                    CreatedAtUtc = DateTime.UtcNow,
-                    LastModifiedAtUtc = DateTime.UtcNow
                 }
             };
+
+            // Clear old legacy accounts if present
+            var oldEmails = new[] { "staff@staysphere.com", "superadmin@staysphere.com" };
+            var oldUsers = context.Users.Where(x => oldEmails.Contains(x.Email)).ToList();
+            if (oldUsers.Any())
+            {
+                context.Users.RemoveRange(oldUsers);
+                context.SaveChanges();
+            }
 
             bool seededAny = false;
             foreach (var u in seedUsers)
             {
-                if (!context.Users.Any(x => x.Email == u.Email))
+                var existingUser = context.Users.FirstOrDefault(x => x.Email == u.Email);
+                if (existingUser != null)
+                {
+                    if (existingUser.Role != u.Role)
+                    {
+                        existingUser.Role = u.Role;
+                        seededAny = true;
+                    }
+                }
+                else
                 {
                     context.Users.Add(u);
                     seededAny = true;
@@ -201,7 +193,7 @@ using (var scope = app.Services.CreateScope())
             if (seededAny)
             {
                 context.SaveChanges();
-                Log.Information("Role-based user accounts seeded successfully.");
+                Log.Information("Role-based user accounts seeded/updated successfully.");
             }
         }
         catch (System.Exception ex)

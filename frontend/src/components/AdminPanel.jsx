@@ -5,7 +5,7 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const userRole = user?.role || user?.Role;
-  const isSuperAdmin = userRole === 'SuperAdmin' || userRole === 5 || !userRole; // SuperAdmin level check
+  const isSuperAdmin = userRole === 'Admin' || userRole === 3 || !userRole; // Admin level check
 
   // Pending hotel approvals state
   const [pendingHotels, setPendingHotels] = useState([
@@ -49,10 +49,10 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
 
   // System users management state
   const [usersList, setUsersList] = useState([
-    { id: 1, name: "Rasika Prabath", email: "rasika@staysphere.com", role: "SuperAdmin", status: "Active", joined: "Jan 2026" },
-    { id: 2, name: "Kavindu Perera", email: "kavindu@grandhorizon.lk", role: "HotelOwner", status: "Active", joined: "Feb 2026" },
+    { id: 1, name: "Rasika Prabath", email: "rasika@staysphere.com", role: "Admin", status: "Active", joined: "Jan 2026" },
+    { id: 2, name: "Kavindu Perera", email: "kavindu@grandhorizon.lk", role: "Partner", status: "Active", joined: "Feb 2026" },
     { id: 3, name: "Sarah Jenkins", email: "sarah.j@gmail.com", role: "Customer", status: "Active", joined: "Mar 2026" },
-    { id: 4, name: "Dinesh Silva", email: "dinesh@villaslk.com", role: "HotelOwner", status: "Active", joined: "Apr 2026" },
+    { id: 4, name: "Dinesh Silva", email: "dinesh@villaslk.com", role: "Partner", status: "Active", joined: "Apr 2026" },
     { id: 5, name: "Amara Wickrama", email: "amara@yahoo.com", role: "Customer", status: "Suspended", joined: "May 2026" }
   ]);
 
@@ -286,9 +286,8 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
                               className={`border border-outline-variant rounded-lg p-1 text-xs font-bold bg-white cursor-pointer ${!isSuperAdmin ? 'opacity-60 cursor-not-allowed' : ''}`}
                             >
                               <option value="Customer">Customer</option>
-                              <option value="HotelOwner">HotelOwner</option>
+                              <option value="Partner">Partner</option>
                               <option value="Admin">Admin</option>
-                              <option value="SuperAdmin">SuperAdmin</option>
                             </select>
                           </td>
                           <td className="p-4">
@@ -414,9 +413,9 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
                 <div className="space-y-3">
                   {[
                     { id: "LOG-109", action: "Approved Hotel Listing", details: "Approved 'The Azure Coastal Retreat' in Bentota", actor: "System Admin (Rasika)", timestamp: "2026-08-13 15:40", category: "Listing Approval" },
-                    { id: "LOG-108", action: "Role Modified", details: "Promoted 'Kavindu Perera' from Traveler to HotelOwner", actor: "SuperAdmin (Rasika)", timestamp: "2026-08-13 14:15", category: "Security & Access" },
-                    { id: "LOG-107", action: "Commission Rate Changed", details: "Platform commission updated from 7.5% to 8.0%", actor: "SuperAdmin (Rasika)", timestamp: "2026-08-12 11:20", category: "Financial Config" },
-                    { id: "LOG-106", action: "User Suspended", details: "Suspended account 'Amara Wickrama' due to policy flag", actor: "SuperAdmin (Rasika)", timestamp: "2026-08-11 09:05", category: "Account Security" }
+                    { id: "LOG-108", action: "Role Modified", details: "Promoted 'Kavindu Perera' from Traveler to Partner", actor: "Admin (Rasika)", timestamp: "2026-08-13 14:15", category: "Security & Access" },
+                    { id: "LOG-107", action: "Commission Rate Changed", details: "Platform commission updated from 7.5% to 8.0%", actor: "Admin (Rasika)", timestamp: "2026-08-12 11:20", category: "Financial Config" },
+                    { id: "LOG-106", action: "User Suspended", details: "Suspended account 'Amara Wickrama' due to policy flag", actor: "Admin (Rasika)", timestamp: "2026-08-11 09:05", category: "Account Security" }
                   ].map((log) => (
                     <div key={log.id} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs">
                       <div>

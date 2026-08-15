@@ -17,7 +17,9 @@ import WhyUs from './components/WhyUs';
 import Testimonials from './components/Testimonials';
 import Newsletter from './components/Newsletter';
 import Footer from './components/Footer';
-import AuthModal from './components/AuthModal';
+import TravelerAuthModal from './components/TravelerAuthModal';
+import PartnerAuthModal from './components/PartnerAuthModal';
+import TravelerDashboard from './components/TravelerDashboard';
 import Toast from './components/Toast';
 import { authApi } from './data/api';
 import { CURRENCIES, PROPERTIES } from './data/mockData';
@@ -46,7 +48,9 @@ export default function App() {
   const [selectedPropertyModal, setSelectedPropertyModal] = useState(null);
   const [bookingDetails, setBookingDetails] = useState(null);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isTravelerAuthOpen, setIsTravelerAuthOpen] = useState(false);
+  const [isPartnerAuthOpen, setIsPartnerAuthOpen] = useState(false);
+  const [authIsSignUp, setAuthIsSignUp] = useState(false);
   const [user, setUser] = useState(null);
 
   // App settings & wishlist
@@ -81,10 +85,10 @@ export default function App() {
     return () => window.removeEventListener('auth_session_expired', handleExpired);
   }, []);
 
-  // Protect Owner Portal & Super Admin Panel based on role
+  // Protect Owner Portal & Admin Panel based on role
   const userRole = user?.role || user?.Role;
-  const isOwner = userRole === 'HotelOwner' || userRole === 3 || userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
-  const isAdmin = userRole === 'Admin' || userRole === 4 || userRole === 'SuperAdmin' || userRole === 5;
+  const isOwner = userRole === 'Partner' || userRole === 2 || userRole === 'Admin' || userRole === 3;
+  const isAdmin = userRole === 'Admin' || userRole === 3;
 
   // Enforce strict Role-Based Access Control (RBAC)
   useEffect(() => {
@@ -94,6 +98,9 @@ export default function App() {
     } else if (currentView === "owner-dashboard" && !isOwner) {
       setCurrentView("home");
       addToast("Access Restricted: Requires Partner (Hotel Owner) account.");
+    } else if (currentView === "traveler-dashboard" && !user) {
+      setCurrentView("home");
+      addToast("Please sign in to access your Traveler Dashboard.");
     } else if (currentView === "checkout" && !user) {
       setCurrentView("home");
       addToast("Please sign in to complete your stay reservation.");
@@ -154,7 +161,14 @@ export default function App() {
         setCurrentView={setCurrentView}
         wishlistCount={wishlist.length}
         onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onOpenTravelerAuth={(signUp) => {
+          setAuthIsSignUp(signUp);
+          setIsTravelerAuthOpen(true);
+        }}
+        onOpenPartnerAuth={(signUp) => {
+          setAuthIsSignUp(signUp);
+          setIsPartnerAuthOpen(true);
+        }}
         selectedCurrency={selectedCurrency}
         setSelectedCurrency={setSelectedCurrency}
         searchQuery={searchQuery}
@@ -205,6 +219,17 @@ export default function App() {
               setSelectedPropertyModal({});
               addToast("Owner Property Editor opened");
             }}
+          />
+        ) : currentView === "traveler-dashboard" ? (
+          <TravelerDashboard
+            user={user}
+            onBack={() => setCurrentView("home")}
+            userBookings={userBookings}
+            wishlist={wishlist}
+            onToggleWishlist={toggleWishlist}
+            selectedCurrency={selectedCurrency}
+            onAddToast={addToast}
+            allProperties={PROPERTIES}
           />
         ) : currentView === "search" ? (
           <SearchResults
@@ -325,14 +350,36 @@ export default function App() {
         onAddToast={addToast}
       />
 
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
+      {/* Traveler Auth Modal */}
+      <TravelerAuthModal
+        isOpen={isTravelerAuthOpen}
+        onClose={() => setIsTravelerAuthOpen(false)}
+        initialIsSignUp={authIsSignUp}
         onLoginSuccess={(userObj) => {
           setUser(userObj);
           const name = userObj?.firstName || userObj?.FirstName || 'Guest';
           addToast(`Welcome back, ${name}!`);
+          const r = userObj?.role || userObj?.Role;
+          if (r === 'Admin' || r === 3) {
+            setCurrentView("admin-panel");
+          } else if (r === 'Partner' || r === 2) {
+            setCurrentView("owner-dashboard");
+          } else {
+            setCurrentView("traveler-dashboard");
+          }
+        }}
+      />
+
+      {/* Partner Auth Modal */}
+      <PartnerAuthModal
+        isOpen={isPartnerAuthOpen}
+        onClose={() => setIsPartnerAuthOpen(false)}
+        initialIsSignUp={authIsSignUp}
+        onLoginSuccess={(userObj) => {
+          setUser(userObj);
+          const name = userObj?.firstName || userObj?.FirstName || 'Partner';
+          addToast(`Partner Portal: Welcome back, ${name}!`);
+          setCurrentView("owner-dashboard");
         }}
       />
 

@@ -76,7 +76,7 @@ namespace StaySphere.API.Controllers
 
         // POST /api/v1/payments/{id}/refund — Admin only
         [HttpPost("{id:guid}/refund")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RefundPayment(Guid id)
         {
             var userId = GetCurrentUserId();
