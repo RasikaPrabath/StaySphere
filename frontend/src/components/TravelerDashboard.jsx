@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { aiApi, bookingApi } from '../data/api';
 
 export default function TravelerDashboard({
   user,
@@ -22,8 +23,40 @@ export default function TravelerDashboard({
   const [profilePhone, setProfilePhone] = useState(user?.phoneNumber || "0771234567");
   const [profilePref, setProfilePref] = useState("Ocean View, High Floors");
 
+  const [backendBookings, setBackendBookings] = useState([]);
+  const [loadingBookings, setLoadingBookings] = useState(false);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      setLoadingBookings(true);
+      try {
+        const data = await bookingApi.getMyBookings();
+        const mapped = data.map(b => ({
+          id: b.id,
+          reference: b.bookingReference,
+          propertyName: b.propertyName || "Luxury Hotel Stay",
+          roomType: b.roomType || "Standard Room",
+          city: b.city || "Sri Lanka",
+          image: b.image || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+          checkIn: b.checkInDate?.split('T')[0] || "2026-10-12",
+          checkOut: b.checkOutDate?.split('T')[0] || "2026-10-15",
+          guests: `${b.guestCount} Guests`,
+          totalPrice: b.totalAmount,
+          status: b.status.toString(),
+          bookedOn: b.createdAtUtc?.split('T')[0] || "2026-08-15"
+        }));
+        setBackendBookings(mapped);
+      } catch (err) {
+        console.warn("Failed to load user bookings from backend, using fallback mocks", err);
+      } finally {
+        setLoadingBookings(false);
+      }
+    };
+    fetchBookings();
+  }, []);
+
   // Mock Bookings list fallback
-  const displayBookings = userBookings.length > 0 ? userBookings : [
+  const displayBookings = backendBookings.length > 0 ? backendBookings : (userBookings.length > 0 ? userBookings : [
     {
       id: "bk-982145",
       reference: "STAY-982145",
@@ -52,7 +85,7 @@ export default function TravelerDashboard({
       status: "Completed",
       bookedOn: "2026-06-01"
     }
-  ];
+  ]);
 
   // Resolve properties in wishlist
   const resolvedWishlist = allProperties.length > 0
@@ -76,29 +109,42 @@ export default function TravelerDashboard({
         }
       ];
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
     const userMsg = { id: Date.now(), sender: 'user', text: chatInput };
     setChatMessages(prev => [...prev, userMsg]);
+    const currentInput = chatInput;
     setChatInput("");
 
-    // Simple auto-replies for virtual assistant
-    setTimeout(() => {
-      let replyText = "I have received your request. Our support team will get in touch shortly.";
-      const lower = chatInput.toLowerCase();
-      if (lower.includes("airport") || lower.includes("pickup") || lower.includes("cab") || lower.includes("taxi")) {
-        replyText = "🚖 Sure! We can arrange an airport pickup from Bandaranaike International Airport (BIA). Standard luxury sedan transfer to Colombo is $40 USD. Would you like me to book it for your upcoming stay?";
-      } else if (lower.includes("cancel") || lower.includes("refund")) {
-        replyText = "📅 Cancellation policies vary by hotel. For your active booking (STAY-982145), you can cancel for free up to 48 hours prior to check-in. Please select 'Cancel Stay' or contact our support.";
-      } else if (lower.includes("wifi") || lower.includes("internet")) {
-        replyText = "📶 All StaySphere premium resorts offer high-speed, complimentary Wi-Fi in guest rooms and common areas.";
-      } else if (lower.includes("hello") || lower.includes("hi") || lower.includes("ayubowan")) {
-        replyText = "Hello! I can help you with airport transfers, local guides, checking your booking status, or hotel amenities. What would you like to know?";
-      }
-      setChatMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: replyText }]);
-    }, 800);
+    try {
+      const response = await aiApi.chatWithAssistant(currentInput);
+      const botMsg = {
+        id: Date.now() + 1,
+        sender: 'bot',
+        text: response.message,
+        suggestedHotels: response.suggestedHotels || []
+      };
+      setChatMessages(prev => [...prev, botMsg]);
+    } catch (err) {
+      console.warn("AI Chat API failed, using fallback simulated chatbot responses", err);
+      // Simple auto-replies for virtual assistant
+      setTimeout(() => {
+        let replyText = "I have received your request. Our support team will get in touch shortly.";
+        const lower = currentInput.toLowerCase();
+        if (lower.includes("airport") || lower.includes("pickup") || lower.includes("cab") || lower.includes("taxi")) {
+          replyText = "🚖 Sure! We can arrange an airport pickup from Bandaranaike International Airport (BIA). Standard luxury sedan transfer to Colombo is $40 USD. Would you like me to book it for your upcoming stay?";
+        } else if (lower.includes("cancel") || lower.includes("refund")) {
+          replyText = "📅 Cancellation policies vary by hotel. For your active booking (STAY-982145), you can cancel for free up to 48 hours prior to check-in. Please select 'Cancel Stay' or contact our support.";
+        } else if (lower.includes("wifi") || lower.includes("internet")) {
+          replyText = "📶 All StaySphere premium resorts offer high-speed, complimentary Wi-Fi in guest rooms and common areas.";
+        } else if (lower.includes("hello") || lower.includes("hi") || lower.includes("ayubowan")) {
+          replyText = "Hello! I can help you with airport transfers, local guides, checking your booking status, or hotel amenities. What would you like to know?";
+        }
+        setChatMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: replyText }]);
+      }, 800);
+    }
   };
 
   const handleProfileUpdate = (e) => {
@@ -428,7 +474,24 @@ export default function TravelerDashboard({
                         ? 'bg-[#0058bc] text-white rounded-tr-none'
                         : 'bg-white border border-slate-150 text-slate-800 rounded-tl-none shadow-sm'
                     }`}>
-                      {msg.text}
+                      <div>{msg.text}</div>
+                      {msg.suggestedHotels && msg.suggestedHotels.length > 0 && (
+                        <div className="mt-3 space-y-2 border-t border-slate-100 pt-2">
+                          <p className="font-extrabold text-[10px] text-secondary uppercase tracking-wider">Recommendations:</p>
+                          <div className="grid grid-cols-1 gap-2">
+                            {msg.suggestedHotels.map(hotel => (
+                              <div key={hotel.id} className="flex gap-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200">
+                                <img src={hotel.imageUrls?.[0] || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=200&q=80"} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" />
+                                <div className="min-w-0 flex-1 text-left">
+                                  <h5 className="font-bold text-[11px] text-slate-800 truncate">{hotel.name}</h5>
+                                  <p className="text-[10px] text-slate-400 truncate">{hotel.city}, {hotel.country}</p>
+                                  <p className="text-[10px] font-extrabold text-primary">From ${hotel.minRoomPrice || 120} / night</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}

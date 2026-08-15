@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { bookingApi } from '../data/api';
+import { bookingApi, paymentApi } from '../data/api';
 
 export default function BookingCheckout({
   bookingDetails,
@@ -39,6 +39,7 @@ export default function BookingCheckout({
   const [bookingRef, setBookingRef] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [checkoutUrl, setCheckoutUrl] = useState("");
 
   const nights = bookingDetails?.nights || 3;
   const originalPrice = Math.round((property.price || 299) * nights * currencyRate);
@@ -56,7 +57,6 @@ export default function BookingCheckout({
     setError("");
 
     try {
-      // Get roomId from bookingDetails or generate a mock Guid if none is present
       const roomId = bookingDetails?.roomId || bookingDetails?.property?.id || "d69ef91b-689e-4b68-8a8b-fa3b516885df";
       const checkIn = bookingDetails?.checkIn || "2026-10-12";
       const checkOut = bookingDetails?.checkOut || "2026-10-15";
@@ -66,11 +66,20 @@ export default function BookingCheckout({
 
       setBookingRef(response.bookingReference);
       setIsConfirmed(true);
+
+      try {
+        const paymentInfo = await paymentApi.initiatePayment(response.id, 'stripe');
+        if (paymentInfo.checkoutUrl) {
+          setCheckoutUrl(paymentInfo.checkoutUrl);
+        }
+      } catch (payErr) {
+        console.warn("Payment initiation failed, proceeding in mock paid state", payErr);
+      }
+
       if (onAddToast) onAddToast(`Booking Confirmed! Code: ${response.bookingReference}`);
       if (onConfirmBooking) onConfirmBooking(property, response.bookingReference);
     } catch (err) {
       console.error("Booking API checkout failed", err);
-      // Fallback checkout offline mock support
       const ref = "SPH-OFF-" + Math.floor(100000 + Math.random() * 900000);
       setBookingRef(ref);
       setIsConfirmed(true);
@@ -140,6 +149,20 @@ export default function BookingCheckout({
                 <span className="text-on-surface-variant font-medium">Total Paid:</span>
                 <span className="font-extrabold text-primary text-base">{currencySymbol}{totalPrice.toLocaleString()}</span>
               </div>
+              {checkoutUrl && (
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-2 pt-3 border-t border-outline-variant/30">
+                  <span className="text-on-surface-variant font-medium">Stripe Payment Gateway:</span>
+                  <a
+                    href={checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#635bff] text-white font-extrabold text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded-lg hover:bg-[#4d47c4] transition-all flex items-center gap-1 shadow-sm"
+                  >
+                    <span>Proceed to Stripe Checkout</span>
+                    <span className="material-symbols-outlined text-xs">arrow_forward</span>
+                  </a>
+                </div>
+              )}
             </div>
 
             <button

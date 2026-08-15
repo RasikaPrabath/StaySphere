@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { dashboardApi } from '../data/api';
 
 export default function OwnerDashboard({ onBack, onAddProperty }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -6,6 +7,36 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(3);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      setLoading(true);
+      try {
+        const data = await dashboardApi.getOwnerStats();
+        setStats(data);
+        if (data.recentBookings) {
+          const mappedBookings = data.recentBookings.map(b => ({
+            id: b.bookingReference,
+            guest: b.guestName,
+            property: b.propertyName,
+            checkIn: new Date(b.checkInDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            checkOut: new Date(b.checkOutDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            guests: 2,
+            amount: `$${b.totalAmount}`,
+            status: b.status
+          }));
+          setBookingsList(mappedBookings);
+        }
+      } catch (err) {
+        console.warn("Failed to load owner stats from backend, using fallback mocks", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadStats();
+  }, []);
 
   // Mock data states
   const [hotelsList, setHotelsList] = useState([
@@ -243,7 +274,9 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                       </span>
                     </div>
                     <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total Revenue (MTD)</h3>
-                    <p className="text-2xl font-extrabold text-primary mt-1">$142,500</p>
+                    <p className="text-2xl font-extrabold text-primary mt-1">
+                      {stats ? `$${stats.totalRevenueEarned.toLocaleString()}` : "$142,500"}
+                    </p>
                   </div>
 
                   <div className="bg-surface-white rounded-2xl p-6 border border-outline-variant/50 shadow-sm flex flex-col justify-between">
@@ -256,9 +289,11 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                       </span>
                     </div>
                     <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Current Occupancy</h3>
-                    <p className="text-2xl font-extrabold text-primary mt-1">84%</p>
+                    <p className="text-2xl font-extrabold text-primary mt-1">
+                      {stats ? `${stats.occupancyRate}%` : "84%"}
+                    </p>
                     <div className="w-full h-2 bg-surface-container-high rounded-full mt-3 overflow-hidden">
-                      <div className="h-full bg-secondary w-[84%] rounded-full"></div>
+                      <div className="h-full bg-secondary rounded-full" style={{ width: stats ? `${stats.occupancyRate}%` : "84%" }}></div>
                     </div>
                   </div>
 
@@ -272,7 +307,9 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                       </span>
                     </div>
                     <h3 className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Active Bookings</h3>
-                    <p className="text-2xl font-extrabold text-primary mt-1">24 Reservations</p>
+                    <p className="text-2xl font-extrabold text-primary mt-1">
+                      {stats ? `${stats.activeBookingsCount} Reservations` : "24 Reservations"}
+                    </p>
                   </div>
                 </section>
 

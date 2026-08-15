@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PROPERTIES } from '../data/mockData';
+import { hotelApi } from '../data/api';
 
 export default function PropertyGrid({
   selectedCategory,
@@ -14,11 +15,43 @@ export default function PropertyGrid({
   const [amenityFilter, setAmenityFilter] = useState("all");
   const [minRatingFilter, setMinRatingFilter] = useState(0);
   const [sortBy, setSortBy] = useState("recommended");
+  const [backendProperties, setBackendProperties] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchHotels = async () => {
+      setLoading(true);
+      try {
+        const data = await hotelApi.getHotels();
+        const mapped = data.map(h => ({
+          id: h.id,
+          title: h.name,
+          location: `${h.city}, ${h.country}`,
+          price: h.priceFrom || 150,
+          rating: h.starRating || 4.5,
+          reviewsCount: h.reviews?.length || 24,
+          images: h.imageUrls && h.imageUrls.length > 0 ? h.imageUrls : ["https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80"],
+          category: h.amenities?.some(a => a.toLowerCase().includes("beach")) ? "beachfront" : "luxury-villas",
+          amenities: h.amenities || [],
+          freeCancellation: h.amenities?.some(a => a.toLowerCase().includes("cancel")) || true,
+          description: h.description || ""
+        }));
+        setBackendProperties(mapped);
+      } catch (err) {
+        console.warn("Failed to fetch hotels from API, falling back to mock properties", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHotels();
+  }, []);
+
+  const displayProperties = backendProperties.length > 0 ? backendProperties : PROPERTIES;
 
   const currencySymbol = selectedCurrency?.symbol || "$";
   const currencyRate = selectedCurrency?.code === "EUR" ? 0.92 : selectedCurrency?.code === "GBP" ? 0.78 : selectedCurrency?.code === "JPY" ? 150 : selectedCurrency?.code === "AED" ? 3.67 : 1;
 
-  const filteredProperties = PROPERTIES.filter((prop) => {
+  const filteredProperties = displayProperties.filter((prop) => {
     // Category match
     if (selectedCategory && selectedCategory !== "all" && prop.category !== selectedCategory) {
       return false;
