@@ -71,13 +71,18 @@ export default {
       spacing: {
         "base": "4px",
         "margin-mobile": "16px",
-        "margin-desktop": "48px",
+        "margin-desktop": "16px",
         "gutter": "24px",
-        "container-max": "1280px"
+        "container-max": "1400px"
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        inter: ["Inter", "sans-serif"]
+        sans: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        opensans: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        trivago: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        inter: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        jakarta: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        outfit: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"],
+        rubik: ["'Segoe UI'", "-apple-system", "BlinkMacSystemFont", "Roboto", "Arial", "sans-serif"]
       }
     },
   },

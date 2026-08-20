@@ -71,7 +71,7 @@ namespace StaySphere.API.Controllers
 
         // GET /api/v1/bookings — Admin only
         [HttpGet]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllBookings()
         {
             var bookings = await _bookingService.GetAllBookingsAsync();

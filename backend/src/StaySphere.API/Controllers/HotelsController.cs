@@ -47,7 +47,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> CreateHotel([FromBody] CreateHotelRequest request)
         {
             var userId = GetCurrentUserId();
@@ -58,7 +58,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> UpdateHotel(Guid id, [FromBody] UpdateHotelRequest request)
         {
             var userId = GetCurrentUserId();
@@ -80,7 +80,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost("{id:guid}/submit")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> SubmitForApproval(Guid id)
         {
             var userId = GetCurrentUserId();
@@ -102,7 +102,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost("{id:guid}/images")]
-        [Authorize(Roles = "HotelOwner,Admin,SuperAdmin")]
+        [Authorize(Roles = "Partner,Admin")]
         public async Task<IActionResult> UploadHotelImage(Guid id, IFormFile file)
         {
             var userId = GetCurrentUserId();
@@ -128,7 +128,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost("/api/v1/admin/hotels/{id:guid}/approve")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ApproveHotel(Guid id)
         {
             try
@@ -143,7 +143,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpPost("/api/v1/admin/hotels/{id:guid}/reject")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RejectHotel(Guid id)
         {
             try
@@ -158,7 +158,7 @@ namespace StaySphere.API.Controllers
         }
 
         [HttpGet("/api/v1/admin/hotels/pending")]
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetPendingHotels()
         {
             var hotels = await _hotelService.GetPendingHotelsAsync();

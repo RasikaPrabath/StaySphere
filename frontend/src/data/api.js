@@ -69,13 +69,14 @@ export const authApi = {
     return user;
   },
 
-  register: async (email, password, firstName, lastName, phoneNumber) => {
+  register: async (email, password, firstName, lastName, phoneNumber, role = 1) => {
     const response = await apiClient.post('/auth/register', {
       email,
       password,
       firstName,
       lastName,
       phoneNumber,
+      role: Number(role),
     });
     const { accessToken, refreshToken, user } = response.data;
     localStorage.setItem('accessToken', accessToken);
@@ -116,6 +117,87 @@ export const bookingApi = {
 
   getMyBookings: async () => {
     const response = await apiClient.get('/bookings/my');
+    return response.data;
+  },
+};
+
+// ─── Hotel & Room API Callers ─────────────────────────────────────────────
+export const hotelApi = {
+  getHotels: async () => {
+    const response = await apiClient.get('/hotels');
+    return response.data;
+  },
+
+  getHotelById: async (id) => {
+    const response = await apiClient.get(`/hotels/${id}`);
+    return response.data;
+  },
+
+  createHotel: async (hotelData) => {
+    const response = await apiClient.post('/hotels', hotelData);
+    return response.data;
+  },
+
+  submitHotel: async (id) => {
+    const response = await apiClient.post(`/hotels/${id}/submit`);
+    return response.data;
+  },
+
+  uploadHotelImage: async (id, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await apiClient.post(`/hotels/${id}/images`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+};
+
+// ─── Admin Dashboard & Approval API Callers ───────────────────────────────
+export const adminApi = {
+  getPendingHotels: async () => {
+    const response = await apiClient.get('/admin/hotels/pending');
+    return response.data;
+  },
+
+  approveHotel: async (id) => {
+    const response = await apiClient.post(`/admin/hotels/${id}/approve`);
+    return response.data;
+  },
+
+  rejectHotel: async (id) => {
+    const response = await apiClient.post(`/admin/hotels/${id}/reject`);
+    return response.data;
+  },
+};
+
+// ─── Dashboard Stats API Callers ──────────────────────────────────────────
+export const dashboardApi = {
+  getAdminStats: async () => {
+    const response = await apiClient.get('/dashboards/admin');
+    return response.data;
+  },
+
+  getOwnerStats: async () => {
+    const response = await apiClient.get('/dashboards/owner');
+    return response.data;
+  },
+};
+
+// ─── AI Concierge API Callers ─────────────────────────────────────────────
+export const aiApi = {
+  chatWithAssistant: async (message) => {
+    const response = await apiClient.post('/ai/chat', { message });
+    return response.data;
+  },
+};
+
+// ─── Payment Integration API Callers ──────────────────────────────────────
+export const paymentApi = {
+  initiatePayment: async (bookingId, gateway = 'stripe') => {
+    const response = await apiClient.post('/payments/initiate', { bookingId, gateway });
     return response.data;
   },
 };

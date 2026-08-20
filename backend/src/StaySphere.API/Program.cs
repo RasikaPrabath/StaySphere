@@ -107,13 +107,98 @@ using (var scope = app.Services.CreateScope())
         {
             // Specifically check if application tables are initialized
             _ = context.Users.Any();
-            Log.Information("Database check passed. Application tables already exist.");
+            Log.Information("Application tables created/verified successfully.");
         }
         catch (System.Exception)
         {
             Log.Information("Application tables do not exist. Initializing schema...");
             databaseCreator.CreateTables();
             Log.Information("Application tables created successfully.");
+        }
+
+        // Seed role demo accounts if missing
+        try
+        {
+            var hasher = scope.ServiceProvider.GetRequiredService<StaySphere.Application.Common.Interfaces.IPasswordHasher>();
+            var seedUsers = new[]
+            {
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "customer@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "Kasun",
+                    LastName = "Perera",
+                    PhoneNumber = "0771234567",
+                    Role = StaySphere.Domain.Enums.UserRole.Customer,
+                    IsEmailVerified = true,
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
+                },
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "owner@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "Kamal",
+                    LastName = "Silva",
+                    PhoneNumber = "0773456789",
+                    Role = StaySphere.Domain.Enums.UserRole.Partner,
+                    IsEmailVerified = true,
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
+                },
+                new StaySphere.Domain.Entities.User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = "admin@staysphere.com",
+                    PasswordHash = hasher.HashPassword("Password123!"),
+                    FirstName = "System",
+                    LastName = "Admin",
+                    PhoneNumber = "0774567890",
+                    Role = StaySphere.Domain.Enums.UserRole.Admin,
+                    IsEmailVerified = true,
+                    CreatedAtUtc = DateTime.UtcNow,
+                    LastModifiedAtUtc = DateTime.UtcNow
+                }
+            };
+
+            // Clear old legacy accounts if present
+            var oldEmails = new[] { "staff@staysphere.com", "superadmin@staysphere.com" };
+            var oldUsers = context.Users.Where(x => oldEmails.Contains(x.Email)).ToList();
+            if (oldUsers.Any())
+            {
+                context.Users.RemoveRange(oldUsers);
+                context.SaveChanges();
+            }
+
+            bool seededAny = false;
+            foreach (var u in seedUsers)
+            {
+                var existingUser = context.Users.FirstOrDefault(x => x.Email == u.Email);
+                if (existingUser != null)
+                {
+                    if (existingUser.Role != u.Role)
+                    {
+                        existingUser.Role = u.Role;
+                        seededAny = true;
+                    }
+                }
+                else
+                {
+                    context.Users.Add(u);
+                    seededAny = true;
+                }
+            }
+            if (seededAny)
+            {
+                context.SaveChanges();
+                Log.Information("Role-based user accounts seeded/updated successfully.");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Log.Warning(ex, "Failed seeding demo users.");
         }
     }
     catch (System.Exception ex)
