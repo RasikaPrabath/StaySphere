@@ -160,9 +160,19 @@ export default function TravelerDashboard({
       <nav className={`fixed md:static left-0 top-0 h-full w-64 border-r border-slate-200 bg-white z-30 flex flex-col transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}`}>
         <div className="px-6 py-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <button onClick={onBack} className="text-2xl font-black text-[#0058bc] flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer">
-              <div className="w-8 h-8 rounded-lg bg-[#0058bc] text-white flex items-center justify-center font-bold text-base">s</div>
-              <span>staySphere</span>
+            <button onClick={onBack} className="flex items-center gap-1 group cursor-pointer focus:outline-none">
+              <span className="font-black text-2xl tracking-tighter leading-none font-inter select-none">
+                <span className="text-[#FF385C]">s</span>
+                <span className="text-[#38bdf8]">t</span>
+                <span className="text-[#FABB05]">a</span>
+                <span className="text-[#FF385C]">y</span>
+                <span className="text-[#38bdf8]">s</span>
+                <span className="text-[#FABB05]">p</span>
+                <span className="text-[#FF385C]">h</span>
+                <span className="text-[#38bdf8]">e</span>
+                <span className="text-[#FABB05]">r</span>
+                <span className="text-[#38bdf8]">e</span>
+              </span>
             </button>
             <button onClick={() => setMobileMenuOpen(false)} className="md:hidden text-slate-500 hover:text-slate-900 cursor-pointer">
               <span className="material-symbols-outlined">close</span>

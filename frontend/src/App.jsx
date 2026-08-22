@@ -20,6 +20,7 @@ import Footer from './components/Footer';
 import TravelerAuthModal from './components/TravelerAuthModal';
 import PartnerAuthModal from './components/PartnerAuthModal';
 import TravelerDashboard from './components/TravelerDashboard';
+import AddPropertyPage from './components/AddPropertyPage';
 import Toast from './components/Toast';
 import { authApi } from './data/api';
 import { CURRENCIES, PROPERTIES } from './data/mockData';
@@ -155,29 +156,31 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-on-surface font-sans flex flex-col selection:bg-secondary-fixed selection:text-primary">
-      {/* Top Navbar */}
-      <Navbar
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-        wishlistCount={wishlist.length}
-        onOpenWishlist={() => setIsWishlistOpen(true)}
-        onOpenTravelerAuth={(signUp) => {
-          setAuthIsSignUp(signUp);
-          setIsTravelerAuthOpen(true);
-        }}
-        onOpenPartnerAuth={(signUp) => {
-          setAuthIsSignUp(signUp);
-          setIsPartnerAuthOpen(true);
-        }}
-        selectedCurrency={selectedCurrency}
-        setSelectedCurrency={setSelectedCurrency}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSearchSubmit={() => handleSearchSubmit()}
-        user={user}
-        onLogout={handleLogout}
-        onOpenMyBookings={() => setIsMyBookingsOpen(true)}
-      />
+      {/* Top Navbar (Hidden on full-screen dedicated dashboards/wizards to prevent duplicate headers) */}
+      {currentView !== 'add-property' && currentView !== 'owner-dashboard' && (
+        <Navbar
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          wishlistCount={wishlist.length}
+          onOpenWishlist={() => setIsWishlistOpen(true)}
+          onOpenTravelerAuth={(signUp) => {
+            setAuthIsSignUp(signUp);
+            setIsTravelerAuthOpen(true);
+          }}
+          onOpenPartnerAuth={(signUp) => {
+            setAuthIsSignUp(signUp);
+            setIsPartnerAuthOpen(true);
+          }}
+          selectedCurrency={selectedCurrency}
+          setSelectedCurrency={setSelectedCurrency}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onSearchSubmit={() => handleSearchSubmit()}
+          user={user}
+          onLogout={handleLogout}
+          onOpenMyBookings={() => setIsMyBookingsOpen(true)}
+        />
+      )}
 
       {/* Main View Router */}
       <main className="flex-grow w-full">
@@ -215,9 +218,14 @@ export default function App() {
         ) : currentView === "owner-dashboard" ? (
           <OwnerDashboard
             onBack={() => setCurrentView("home")}
-            onAddProperty={() => {
-              setSelectedPropertyModal({});
-              addToast("Owner Property Editor opened");
+            onNavigateToAddProperty={() => setCurrentView("add-property")}
+          />
+        ) : currentView === "add-property" ? (
+          <AddPropertyPage
+            onBackToDashboard={() => setCurrentView("owner-dashboard")}
+            onPropertyCreated={(newHotel) => {
+              addToast(`Property '${newHotel.title}' listed successfully!`);
+              setCurrentView("owner-dashboard");
             }}
           />
         ) : currentView === "traveler-dashboard" ? (
@@ -378,8 +386,8 @@ export default function App() {
         onLoginSuccess={(userObj) => {
           setUser(userObj);
           const name = userObj?.firstName || userObj?.FirstName || 'Partner';
-          addToast(`Partner Portal: Welcome back, ${name}!`);
-          setCurrentView("owner-dashboard");
+          addToast(`Welcome Partner ${name}! Launching Property Registration...`);
+          setCurrentView("add-property");
         }}
       />
 

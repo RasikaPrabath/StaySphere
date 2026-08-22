@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { dashboardApi } from '../data/api';
+import AddPropertyModal from './AddPropertyModal';
 
-export default function OwnerDashboard({ onBack, onAddProperty }) {
+export default function OwnerDashboard({ onBack, onNavigateToAddProperty }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [timeRange, setTimeRange] = useState('Last 6 Months');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(3);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showAddPropertyModal, setShowAddPropertyModal] = useState(false);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -132,9 +134,19 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
       <nav className={`fixed md:static left-0 top-0 h-full w-64 border-r border-outline-variant bg-surface-white z-30 flex flex-col transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}`}>
         <div className="px-6 py-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <button onClick={onBack} className="text-headline-md font-headline-md font-bold text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold text-base">S</div>
-              <span>StaySphere</span>
+            <button onClick={onBack} className="flex items-center gap-1 group cursor-pointer focus:outline-none">
+              <span className="font-black text-2xl tracking-tighter leading-none font-inter select-none">
+                <span className="text-[#FF385C]">s</span>
+                <span className="text-[#38bdf8]">t</span>
+                <span className="text-[#FABB05]">a</span>
+                <span className="text-[#FF385C]">y</span>
+                <span className="text-[#38bdf8]">s</span>
+                <span className="text-[#FABB05]">p</span>
+                <span className="text-[#FF385C]">h</span>
+                <span className="text-[#38bdf8]">e</span>
+                <span className="text-[#FABB05]">r</span>
+                <span className="text-[#38bdf8]">e</span>
+              </span>
             </button>
             <button onClick={() => setMobileMenuOpen(false)} className="md:hidden text-on-surface-variant hover:text-primary">
               <span className="material-symbols-outlined">close</span>
@@ -191,7 +203,10 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
             Back to Guest View
           </button>
           <button
-            onClick={() => onAddProperty && onAddProperty()}
+            onClick={() => {
+              if (onNavigateToAddProperty) onNavigateToAddProperty();
+              else setShowAddPropertyModal(true);
+            }}
             className="w-full py-3 bg-secondary text-white font-label-md text-label-md rounded-xl shadow-md hover:bg-secondary-container transition-colors font-bold cursor-pointer flex items-center justify-center gap-2"
           >
             <span className="material-symbols-outlined text-lg">add</span> Add New Hotel
@@ -366,7 +381,7 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                     <h3 className="text-lg font-bold text-primary">Your Listed Hotels & Villas</h3>
                     <p className="text-xs text-on-surface-variant">Manage your property details, room pricing, and amenities.</p>
                   </div>
-                  <button onClick={onAddProperty} className="bg-secondary text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow hover:bg-secondary-container">
+                  <button onClick={() => { if (onNavigateToAddProperty) onNavigateToAddProperty(); else setShowAddPropertyModal(true); }} className="bg-secondary text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-1.5 shadow hover:bg-secondary-container cursor-pointer">
                     <span className="material-symbols-outlined text-base">add</span> Add New Hotel
                   </button>
                 </div>
@@ -376,8 +391,8 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                     <div key={hotel.id} className="bg-surface-white rounded-2xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                       <div className="h-44 relative bg-surface-container">
                         <img src={hotel.image} alt={hotel.title} className="w-full h-full object-cover" />
-                        <span className="absolute top-3 right-3 bg-emerald-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
-                          {hotel.status}
+                        <span className={`absolute top-3 right-3 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1 ${hotel.status === 'Active' ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white animate-pulse'}`}>
+                          {hotel.status === 'Pending Verification' ? 'Under Review (24h)' : hotel.status}
                         </span>
                       </div>
                       <div className="p-5">
@@ -386,11 +401,17 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
                           <span className="material-symbols-outlined text-sm text-secondary">location_on</span>
                           {hotel.location}
                         </p>
+                        {hotel.status === 'Pending Verification' && (
+                          <div className="mb-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-semibold flex items-start gap-2">
+                            <span className="material-symbols-outlined text-sm text-amber-600 shrink-0 mt-0.5">verified_user</span>
+                            <span>StaySphere compliance verification in progress. Admin approval pending.</span>
+                          </div>
+                        )}
                         <div className="flex justify-between items-center pt-3 border-t border-outline-variant/50 text-xs">
                           <span className="font-bold text-primary">{hotel.price}</span>
                           <span className="text-on-surface-variant font-medium">{hotel.rooms}</span>
                         </div>
-                        <button onClick={onAddProperty} className="w-full mt-4 py-2 rounded-xl border border-secondary text-secondary hover:bg-secondary/10 text-xs font-bold transition-colors">
+                        <button onClick={() => { if (onNavigateToAddProperty) onNavigateToAddProperty(); else setShowAddPropertyModal(true); }} className="w-full mt-4 py-2 rounded-xl border border-secondary text-secondary hover:bg-secondary/10 text-xs font-bold transition-colors cursor-pointer">
                           Edit Property Details
                         </button>
                       </div>
@@ -550,6 +571,15 @@ export default function OwnerDashboard({ onBack, onAddProperty }) {
           </div>
         </div>
       </main>
+
+      {showAddPropertyModal && (
+        <AddPropertyModal
+          onClose={() => setShowAddPropertyModal(false)}
+          onPropertyAdded={(newHotel) => {
+            setHotelsList(prev => [newHotel, ...prev]);
+          }}
+        />
+      )}
     </div>
   );
 }

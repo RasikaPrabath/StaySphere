@@ -98,19 +98,24 @@ export default function PartnerAuthModal({ isOpen, onClose, onLoginSuccess, init
           </div>
         </div>
 
-        {/* Demo filler */}
-        {!isSignUp && (
-          <div className="mb-4 flex items-center gap-1.5 overflow-x-auto pb-1">
-            <span className="text-[10px] font-bold text-sky-400 uppercase tracking-wider shrink-0">Demo Fill:</span>
+        {/* Quick Demo Fill & Instant Access */}
+        <div className="mb-4 bg-blue-950/80 p-3 rounded-2xl border border-blue-800/80 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-sky-300 uppercase tracking-wider">Quick Partner Access:</span>
             <button
               type="button"
-              onClick={() => { setEmail('owner@staysphere.com'); setPassword('Password123!'); }}
-              className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-blue-950 hover:bg-blue-900 border border-blue-800 text-[#38bdf8] cursor-pointer shrink-0"
+              onClick={() => {
+                const demoUser = { id: "u-owner", email: "owner@staysphere.com", firstName: "Kamal", lastName: "Silva", role: "Partner", isEmailVerified: true };
+                localStorage.setItem('accessToken', 'demo-partner-token');
+                onLoginSuccess && onLoginSuccess(demoUser);
+                onClose();
+              }}
+              className="text-xs font-bold px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#FF385C] to-amber-500 hover:brightness-110 text-white shadow-md transition-all cursor-pointer flex items-center gap-1"
             >
-              Kamal (Hotel Partner)
+              <span>⚡ Instant Demo Access as Partner</span>
             </button>
           </div>
-        )}
+        </div>
 
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-rose-950/50 border border-rose-800 text-rose-300 text-xs font-semibold flex items-center gap-2">

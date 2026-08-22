@@ -383,16 +383,29 @@ export default function Navbar({
 
                 {/* Role-Restricted Portals */}
                 {isOwner ? (
-                  <button
-                    onClick={() => {
-                      setCurrentView("owner-dashboard");
-                      setShowMenuDropdown(false);
-                    }}
-                    className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'owner-dashboard' ? 'text-[#0284c7] font-bold bg-sky-50' : 'text-[#0284c7]'}`}
-                  >
-                    <span className="material-symbols-outlined text-lg text-[#0284c7]">domain_add</span>
-                    <span>Hotel Owner Dashboard</span>
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        setCurrentView("add-property");
+                        setShowMenuDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer text-[#0284c7]`}
+                    >
+                      <span className="material-symbols-outlined text-lg text-[#0284c7]">add_business</span>
+                      <span>List New Property</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setCurrentView("owner-dashboard");
+                        setShowMenuDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-xs font-bold hover:bg-gray-50 transition-colors flex items-center gap-2.5 cursor-pointer ${currentView === 'owner-dashboard' ? 'text-[#0284c7] font-bold bg-sky-50' : 'text-[#0284c7]'}`}
+                    >
+                      <span className="material-symbols-outlined text-lg text-[#0284c7]">domain</span>
+                      <span>Hotel Owner Dashboard</span>
+                    </button>
+                  </>
                 ) : (
                   <button
                     onClick={() => {
@@ -431,7 +444,7 @@ export default function Navbar({
                   </button>
                 ) : (
                   <button
-                    onClick={() => { onOpenAuth(); setShowMenuDropdown(false); }}
+                    onClick={() => { onOpenTravelerAuth && onOpenTravelerAuth(false); setShowMenuDropdown(false); }}
                     className="w-full text-left px-4 py-2.5 text-xs font-bold text-[#0284c7] hover:bg-sky-50 transition-colors flex items-center gap-2.5 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-lg">login</span>

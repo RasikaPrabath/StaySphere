@@ -169,9 +169,22 @@ export default function AdminPanel({ user, onBack, onAddToast }) {
       <header className="bg-surface-white text-primary border-b border-outline-variant shadow-sm top-0 z-50 shrink-0">
         <div className="flex justify-between items-center w-full px-6 h-20">
           <div className="flex items-center gap-6">
-            <button onClick={onBack} className="text-xl font-extrabold text-primary flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <span className="material-symbols-outlined text-secondary text-2xl">admin_panel_settings</span>
-              <span>StaySphere Admin</span>
+            <button onClick={onBack} className="flex items-center gap-2 group cursor-pointer focus:outline-none">
+              <span className="font-black text-2xl tracking-tighter leading-none font-inter select-none">
+                <span className="text-[#FF385C]">s</span>
+                <span className="text-[#38bdf8]">t</span>
+                <span className="text-[#FABB05]">a</span>
+                <span className="text-[#FF385C]">y</span>
+                <span className="text-[#38bdf8]">s</span>
+                <span className="text-[#FABB05]">p</span>
+                <span className="text-[#FF385C]">h</span>
+                <span className="text-[#38bdf8]">e</span>
+                <span className="text-[#FABB05]">r</span>
+                <span className="text-[#38bdf8]">e</span>
+              </span>
+              <span className="text-[10px] bg-secondary/10 text-secondary border border-secondary/20 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                Admin Control
+              </span>
             </button>
             <div className="hidden md:flex items-center bg-surface-container-low rounded-full px-4 py-2 border border-outline-variant">
               <span className="material-symbols-outlined text-gray-400 mr-2 text-sm">search</span>
